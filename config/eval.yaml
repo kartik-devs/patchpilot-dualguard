@@ -1,0 +1,24 @@
+# PatchPilot v2 "DualGuard" — eval-harness settings.
+# Consumed by eval/run_eval.py (CLI flags take precedence over these defaults).
+
+# Default vLLM endpoints (override per-run on the CLI).
+fixer_url: "http://localhost:8000/v1"
+fixer_model: "fixer"
+judge_url: "http://localhost:8001/v1"
+judge_model: "judge"
+
+# Retry / best-of-n behavior.
+n_retries: 1            # max retries with gate-failure feedback appended
+best_of_n: 1            # candidates sampled per attempt (needs a judge to rank)
+temperature: 0.2        # fixer sampling temperature
+
+# Where vulnerable revisions are checked out (under the git-ignored data/ tree).
+checkout_root: "data/checkouts"
+
+# Metric settings (Functionality-Preserved & Vuln-Cleared Rate).
+metric:
+  wilson_z: 1.96        # 95% Wilson CI
+  strata:
+    - overall
+    - source            # vul4j / vjbench / vjbench-trans
+    - semgrep_coverage  # covered / uncovered

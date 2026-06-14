@@ -1,0 +1,20 @@
+# PatchPilot v2 "DualGuard" — verification-gate thresholds & tool settings.
+# Loaded by harness.gate.GateConfig.from_yaml(); unknown keys are ignored and
+# missing keys fall back to the GateConfig dataclass defaults.
+
+# AST non-deletion guard: patched reachable statements must be at least this
+# fraction of the original (defeats delete-the-sink gaming).
+min_retained_ratio: 0.6
+
+# Subprocess timeouts (seconds) for the Vul4J compile / test steps.
+compile_timeout_s: 1200
+test_timeout_s: 1800
+
+# Dual-SAST settings forwarded to harness.layers.sast.sast_and_gate.
+semgrep_config: "p/java"
+codeql_suite: "java-security-extended"
+cwe_focus_path: "config/cwe_focus.yaml"
+
+# A bug whose PoV does NOT fail on the vulnerable revision is treated as
+# unusable (not reproducible) and yields an all-False verdict.
+require_baseline_pov_fail: true

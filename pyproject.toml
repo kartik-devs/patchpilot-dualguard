@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patchpilot-dualguard"
+version = "2.0.0"
+description = "PatchPilot v2 DualGuard: a verified Java vulnerability-repair pipeline (executable gate + dual-SAST + AST non-deletion guard)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "PatchPilot Team" }]
+keywords = ["vulnerability-repair", "semgrep", "codeql", "vul4j", "llm", "security"]
+
+# Runtime deps for the CPU/JVM harness. GPU-only deps live in requirements-cloud.txt
+# (vllm/peft/trl/etc.) and are NOT declared here so a plain `pip install -e .` on a
+# laptop stays light. Vul4J (Docker) and CodeQL (setup_codeql.sh) are not pip packages.
+dependencies = [
+    "pyyaml==6.0.2",
+    "javalang==0.13.0",
+    "requests==2.32.3",
+    "numpy==2.1.2",
+]
+
+[project.optional-dependencies]
+harness = [
+    "semgrep==1.86.0",
+    "streamlit==1.39.0",
+    "pytest==8.3.3",
+]
+
+[project.scripts]
+pp-gate = "harness.gate:main"
+pp-eval = "eval.run_eval:main"
+pp-prep = "data.prep.prepare_sft:main"
+pp-build-eval = "data.prep.build_eval_set:main"
+
+[tool.setuptools]
+# Explicit package list: the implementers built both the spec layout (training/,
+# serving/, eval/) and helper shims (data/, train/, serve/). List every package
+# that ships importable code so editable installs expose them all.
+packages = [
+    "harness",
+    "harness.layers",
+    "eval",
+    "data",
+    "data.prep",
+    "serving",
+    "serve",
+    "training",
+    "train",
+]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

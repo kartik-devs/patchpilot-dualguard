@@ -1,0 +1,31 @@
+# PatchPilot v2 "DualGuard" — pinned tool & model versions (single source of truth).
+# Referenced by config/cwe_focus.yaml (pinned_in) and harness/layers/sast.py.
+# Keep these in lock-step with requirements-harness.txt / requirements-cloud.txt.
+
+semgrep: "1.86.0"                 # matches requirements-harness.txt (pip)
+semgrep_rule_revision: "p/java"  # community ruleset / pack used unless rule_ids given
+
+# CodeQL is NOT a pip package — installed via scripts/setup_codeql.sh.
+codeql_bundle: "codeql-bundle-v2.18.4"
+codeql_bundle_url: "https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.18.4/codeql-bundle-linux64.tar.gz"
+# SHA-256 of the bundle tarball; verified by scripts/setup_codeql.sh. Replace with
+# the real published checksum at setup time (the script warns if left empty).
+codeql_bundle_sha256: ""
+codeql_suite: "java-security-extended"
+
+# Vul4J is NOT a pip package — run via the Docker image below.
+vul4j_image: "tuhhsoftsec/vul4j"
+vul4j_image_tag: "latest"
+
+# Co-resident vLLM models (see config/serve.yaml for ports / gpu utilization).
+models:
+  fixer: "Qwen/Qwen2.5-Coder-32B-Instruct"
+  judge: "Qwen/Qwen2.5-32B-Instruct"
+  fixer_base_small: "Qwen/Qwen2.5-Coder-7B-Instruct"
+
+# Cloud stack (informational; pinned in requirements-cloud.txt).
+cloud:
+  vllm: "0.6.3"
+  transformers: "4.46.0"
+  peft: "0.13.2"
+  trl: "0.11.4"

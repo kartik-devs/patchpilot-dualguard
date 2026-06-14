@@ -1,0 +1,19 @@
+# PatchPilot v2 "DualGuard" — co-resident vLLM serving settings (single MI300X).
+# Read by serving/launch_vllm.py. Two processes on ONE 192GB card prove single-card
+# co-residency (combined BF16 weights exceed 80GB before the KV cache).
+
+fixer:
+  model: "Qwen/Qwen2.5-Coder-32B-Instruct"
+  served_model_name: "fixer"
+  port: 8000
+  gpu_memory_utilization: 0.45
+  max_model_len: 16384
+  dtype: "bfloat16"
+
+judge:
+  model: "Qwen/Qwen2.5-32B-Instruct"   # swap to Qwen/Qwen2.5-72B-Instruct for a ~144GB combined claim
+  served_model_name: "judge"
+  port: 8001
+  gpu_memory_utilization: 0.45
+  max_model_len: 8192
+  dtype: "bfloat16"

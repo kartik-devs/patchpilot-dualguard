@@ -1,0 +1,18 @@
+{
+  "version": "1.86.0",
+  "results": [
+    {
+      "check_id": "java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli",
+      "path": "src/main/java/demo/UserDao.java",
+      "start": { "line": 14, "col": 9 },
+      "end": { "line": 14, "col": 60 },
+      "extra": {
+        "severity": "ERROR",
+        "message": "Detected a formatted string in a SQL statement (SQL injection).",
+        "metadata": { "cwe": ["CWE-89: SQL Injection"] }
+      }
+    }
+  ],
+  "errors": [],
+  "paths": { "scanned": ["src/main/java/demo/UserDao.java"] }
+}
