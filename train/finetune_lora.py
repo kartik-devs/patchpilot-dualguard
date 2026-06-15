@@ -196,10 +196,24 @@ def train(cfg: TrainConfig) -> int:
         task_type="CAUSAL_LM",
     )
 
-    train_ds = load_sft_dataset(cfg.data)
-    eval_ds = load_sft_dataset(cfg.eval_data) if cfg.eval_data else None
+    # Convert to a conversational "messages" dataset; modern TRL auto-applies the
+    # chat template (no formatting_func needed).
+    def _to_messages(ex):
+        return {"messages": build_chat_messages(ex)}
 
-    sft_config = SFTConfig(
+    train_ds = load_sft_dataset(cfg.data)
+    train_ds = train_ds.map(_to_messages, remove_columns=train_ds.column_names)
+    eval_ds = None
+    if cfg.eval_data:
+        eval_ds = load_sft_dataset(cfg.eval_data)
+        eval_ds = eval_ds.map(_to_messages, remove_columns=eval_ds.column_names)
+
+    # TRL renamed/removed several kwargs across versions (e.g. max_seq_length ->
+    # max_length on SFTConfig; tokenizer -> processing_class on SFTTrainer). Build
+    # the args tolerantly so this runs on both older (0.12+) and newer (1.x) TRL.
+    import inspect
+
+    sft_kwargs = dict(
         output_dir=cfg.out,
         num_train_epochs=cfg.epochs,
         per_device_train_batch_size=cfg.batch_size,
@@ -209,19 +223,32 @@ def train(cfg: TrainConfig) -> int:
         bf16=True,
         logging_steps=cfg.logging_steps,
         save_steps=cfg.save_steps,
-        max_seq_length=cfg.max_seq_len,
         seed=cfg.seed,
         report_to="none",
     )
+    _sft_params = inspect.signature(SFTConfig.__init__).parameters
+    if "max_length" in _sft_params:
+        sft_kwargs["max_length"] = cfg.max_seq_len
+    elif "max_seq_length" in _sft_params:
+        sft_kwargs["max_seq_length"] = cfg.max_seq_len
+    sft_config = SFTConfig(**sft_kwargs)
 
-    trainer = SFTTrainer(
+    trainer_kwargs = dict(
         model=model,
         args=sft_config,
         train_dataset=train_ds,
-        eval_dataset=eval_ds,
         peft_config=peft_config,
-        formatting_func=make_formatting_func(tokenizer),
     )
+    if eval_ds is not None:
+        trainer_kwargs["eval_dataset"] = eval_ds
+    _trainer_params = inspect.signature(SFTTrainer.__init__).parameters
+    if "processing_class" in _trainer_params:
+        trainer_kwargs["processing_class"] = tokenizer
+    elif "tokenizer" in _trainer_params:
+        trainer_kwargs["tokenizer"] = tokenizer
+    elif "formatting_func" in _trainer_params:
+        trainer_kwargs["formatting_func"] = make_formatting_func(tokenizer)
+    trainer = SFTTrainer(**trainer_kwargs)
 
     trainer.train()
     trainer.save_model(cfg.out)
