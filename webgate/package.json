@@ -1,0 +1,17 @@
+{
+  "name": "patchpilot-webgate",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "DualGuard a11y gate: axe-core fail->pass verification of UI/accessibility fixes (the UI arm of PatchPilot's verified-remediation engine)",
+  "scripts": {
+    "scan": "node axe_scan.mjs"
+  },
+  "dependencies": {
+    "axe-core": "^4.10.2",
+    "jsdom": "^25.0.1"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.48.2"
+  }
+}

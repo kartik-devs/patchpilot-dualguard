@@ -54,6 +54,11 @@ photos/
 handbook*
 *hackathon*sheet*
 
+# ── Node / WebGate ──
+node_modules/
+webgate/node_modules/
+npm-debug.log*
+
 # ── Editor / OS ──
 .vscode/
 .idea/
