@@ -1,17 +1,22 @@
-"""Streamlit dashboard for DualGuard eval results (MG5).
+"""Streamlit dashboard — PatchPilot's unified verified-remediation demo surface.
 
-Four panels, fed by a ``results/eval_<tag>.json`` produced by :mod:`eval.run_eval`:
-  1. Bug selector + side-by-side diff (original vs patched_code).
-  2. A 4-part badge from one ``GateVerdict.to_dict()``: compiles, regression_pass,
-     pov_flipped, and (semgrep_clean AND codeql_clean).
-  3. Live ``rocm-smi`` occupancy via ``scripts/rocm_smi_watch.sh`` (subprocess).
-  4. The strata ``RateStat`` table (rate +/- Wilson CI by source / coverage).
+Renders the SAME badge layout for two domains, proving "one proof engine, many
+domains" on screen:
+
+  * Security (from ``results/eval_<tag>.json``, written by :mod:`eval.run_eval`):
+    strata FP&VC table + per-bug GateVerdict badges (compiles / regression /
+    pov_flipped / sast_clean / not_deleted) and the per-layer detail.
+  * Accessibility (from an A11yVerdict JSON written by
+    ``python -m harness.webgate -o results/webgate_positive.json``): the RED→GREEN
+    axe-core flip + the DOM non-deletion guard.
+  * Live ``rocm-smi`` co-residency snapshot (the AMD >80 GB proof).
+
+The success oracle shown is ``cleared`` — identical to the gate/eval logic.
 
 Run::
 
-    streamlit run ui/dashboard.py -- --results results/eval_finetuned.json
-
-The success oracle shown is ``GateVerdict.cleared`` — identical to the gate/eval.
+    streamlit run ui/dashboard.py -- --results results/eval_finetuned.json \
+        --webgate results/webgate_positive.json
 """
 
 from __future__ import annotations
@@ -28,18 +33,16 @@ from typing import Any, Dict, List, Optional
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     """Parse the args passed after ``--`` to ``streamlit run``."""
     p = argparse.ArgumentParser(prog="ui/dashboard.py")
-    p.add_argument(
-        "--results",
-        default="results/eval_finetuned.json",
-        help="Path to an eval results JSON from eval.run_eval.",
-    )
-    # Streamlit may inject its own args; ignore unknowns.
+    p.add_argument("--results", default="results/eval_finetuned.json",
+                   help="Security eval results JSON from eval.run_eval.")
+    p.add_argument("--webgate", default="results/webgate_positive.json",
+                   help="A11y verdict JSON from `python -m harness.webgate -o ...`.")
     args, _unknown = p.parse_known_args(argv if argv is not None else sys.argv[1:])
     return args
 
 
-def load_results(path: str) -> Dict[str, Any]:
-    """Load the results document, returning {} (with a UI warning) if missing."""
+def load_json(path: str) -> Dict[str, Any]:
+    """Load a JSON doc, returning {} if missing/unreadable."""
     if not path or not os.path.isfile(path):
         return {}
     try:
@@ -55,121 +58,160 @@ def rocm_smi_snapshot(repo_root: str) -> str:
     if not os.path.isfile(script):
         return "scripts/rocm_smi_watch.sh not found."
     try:
-        proc = subprocess.run(
-            ["bash", script, "--once"],
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
+        proc = subprocess.run(["bash", script, "--once"], capture_output=True,
+                              text=True, timeout=15)
         return (proc.stdout or proc.stderr or "").strip() or "(no rocm-smi output)"
     except (OSError, subprocess.SubprocessError) as exc:
         return f"rocm-smi unavailable: {exc}"
 
 
 def _unified_diff(original: str, patched: str) -> str:
-    """Return a unified diff string between original and patched sources."""
     diff = difflib.unified_diff(
         (original or "").splitlines(keepends=True),
         (patched or "").splitlines(keepends=True),
-        fromfile="original",
-        tofile="patched",
+        fromfile="original", tofile="patched",
     )
-    return "".join(diff) or "(identical)"
+    return "".join(diff) or "(diff unavailable — code not stored in this results file)"
 
 
-def _render(st: Any, args: argparse.Namespace) -> None:
-    """Render the dashboard given an imported ``streamlit`` module."""
-    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    st.set_page_config(page_title="PatchPilot DualGuard", layout="wide")
-    st.title("PatchPilot v2 — DualGuard")
+def _badges(st: Any, items: List[tuple]) -> None:
+    """Render a row of PASS/FAIL metric badges from (label, bool) tuples."""
+    cols = st.columns(len(items))
+    for col, (label, ok) in zip(cols, items):
+        col.metric(label, "✅ PASS" if ok else "❌ FAIL")
 
-    doc = load_results(args.results)
-    if not doc:
-        st.warning(
-            f"No results loaded from {args.results!r}. Run `make eval` first, or pass "
-            "--results <path>."
+
+# --------------------------------------------------------------------------- #
+# Security panel (GateVerdict)
+# --------------------------------------------------------------------------- #
+def _render_security(st: Any, doc: Dict[str, Any]) -> None:
+    st.header("🔒 Security — Java vulnerability repair")
+    st.caption(f"model_tag: {doc.get('model_tag', '?')}  ·  n={doc.get('n', 0)}")
+
+    overall = doc.get("overall", {})
+    if overall:
+        st.metric(
+            "Functionality-Preserved & Vuln-Cleared Rate",
+            f"{overall.get('rate', 0.0)*100:.1f}%",
+            f"{overall.get('cleared', 0)}/{overall.get('n', 0)} cleared · "
+            f"95% CI [{overall.get('ci_low', 0)*100:.1f}%, {overall.get('ci_high', 0)*100:.1f}%]",
         )
-        return
 
-    st.caption(f"results: {args.results}  ·  model_tag: {doc.get('model_tag', '?')}")
-
-    # --- Panel 4 (top): strata rate table ---------------------------------- #
-    st.subheader("FP&VC-Rate by stratum (Wilson 95% CI)")
     strata = doc.get("strata", {})
     if strata:
-        rows = [
-            {
-                "stratum": name,
-                "rate": round(stat.get("rate", 0.0), 3),
-                "ci_low": round(stat.get("ci_low", 0.0), 3),
-                "ci_high": round(stat.get("ci_high", 0.0), 3),
-                "cleared": stat.get("cleared", 0),
-                "n": stat.get("n", 0),
-            }
-            for name, stat in strata.items()
-        ]
-        st.table(rows)
-    else:
-        st.info("No strata in this results file.")
+        st.subheader("FP&VC-Rate by stratum (Wilson 95% CI)")
+        st.table([
+            {"stratum": name, "rate": round(s.get("rate", 0.0), 3),
+             "ci_low": round(s.get("ci_low", 0.0), 3), "ci_high": round(s.get("ci_high", 0.0), 3),
+             "cleared": s.get("cleared", 0), "n": s.get("n", 0)}
+            for name, s in strata.items()
+        ])
 
-    # --- Panel 1: bug selector + diff -------------------------------------- #
-    per_bug = doc.get("per_bug", [])
-    if not per_bug:
-        st.info("No per-bug rows in this results file.")
+    # NOTE: run_eval writes "rows" (each {bug, verdict, tag, cleared}); no per_bug.
+    rows = doc.get("rows", [])
+    if not rows:
+        st.info("No per-bug rows in this results file. Run `make eval` to populate.")
         return
-    ids = [row.get("bug", {}).get("id", f"row-{i}") for i, row in enumerate(per_bug)]
-    choice = st.selectbox("Bug", ids)
-    row = per_bug[ids.index(choice)]
-    bug = row.get("bug", {})
+    ids = [r.get("bug", {}).get("id", f"row-{i}") for i, r in enumerate(rows)]
+    choice = st.selectbox("Bug", ids, key="sec_bug")
+    row = rows[ids.index(choice)]
     verdict = row.get("verdict", {})
 
-    # --- Panel 2: 4-part badge --------------------------------------------- #
-    st.subheader(f"Verdict for {choice}  (cleared={verdict.get('cleared', False)})")
-    badges = [
+    st.subheader(f"GateVerdict for {choice}  ·  cleared={verdict.get('cleared', False)}")
+    _badges(st, [
         ("compiles", verdict.get("compiles", False)),
-        ("regression_pass", verdict.get("regression_pass", False)),
-        ("pov_flipped", verdict.get("pov_flipped", False)),
-        (
-            "sast_clean",
-            bool(verdict.get("semgrep_clean", False))
-            and bool(verdict.get("codeql_clean", False)),
-        ),
-    ]
-    cols = st.columns(len(badges))
-    for col, (label, ok) in zip(cols, badges):
-        col.metric(label, "PASS" if ok else "FAIL")
+        ("regression", verdict.get("regression_pass", False)),
+        ("pov fail→pass", verdict.get("pov_flipped", False)),
+        ("Semgrep+CodeQL", bool(verdict.get("semgrep_clean")) and bool(verdict.get("codeql_clean"))),
+        ("not deleted", verdict.get("not_deleted", False)),
+    ])
 
-    st.subheader("Diff (original -> patched)")
-    original = row.get("original_code", bug.get("original_code", ""))
+    layers = verdict.get("layers", [])
+    if layers:
+        st.caption("Per-layer detail (the executable proof)")
+        st.table([{"layer": l.get("name"), "passed": l.get("passed"),
+                   "detail": (l.get("detail", "") or "")[:140]} for l in layers])
+
+    original = row.get("original_code", "")
     patched = row.get("patched_code", "")
-    st.code(_unified_diff(original, patched), language="diff")
+    if original or patched:
+        st.subheader("Diff (original → patched)")
+        st.code(_unified_diff(original, patched), language="diff")
 
-    # --- Panel 3: rocm-smi co-residency ------------------------------------ #
-    st.subheader("GPU co-residency (rocm-smi)")
-    if st.button("Refresh rocm-smi"):
+
+# --------------------------------------------------------------------------- #
+# Accessibility panel (A11yVerdict)
+# --------------------------------------------------------------------------- #
+def _render_a11y(st: Any, doc: Dict[str, Any]) -> None:
+    st.header("♿ Accessibility — same engine, axe-core oracle")
+    st.caption(f"page: {doc.get('page_id', '?')}  ·  violations after fix: {doc.get('violations_after', '?')}")
+
+    st.subheader(f"A11yVerdict  ·  cleared={doc.get('cleared', False)}")
+    _badges(st, [
+        ("had violations", doc.get("had_baseline_violations", False)),
+        ("axe RED→GREEN", doc.get("a11y_flipped", False)),
+        ("not deleted (DOM)", doc.get("not_deleted", False)),
+    ])
+
+    base = doc.get("baseline_by_rule", {}) or {}
+    after = doc.get("after_by_rule", {}) or {}
+    rules = sorted(set(base) | set(after))
+    if rules:
+        st.caption("axe-core violations: before (RED) → after (GREEN)")
+        st.table([{"rule": r, "before": base.get(r, 0), "after": after.get(r, 0)} for r in rules])
+
+    layers = doc.get("layers", [])
+    if layers:
+        st.table([{"layer": l.get("name"), "passed": l.get("passed"),
+                   "detail": (l.get("detail", "") or "")[:140]} for l in layers])
+
+
+# --------------------------------------------------------------------------- #
+def _render(st: Any, args: argparse.Namespace) -> None:
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    st.set_page_config(page_title="PatchPilot — Verified Remediation", layout="wide")
+    st.title("PatchPilot v2 — Verified Remediation")
+    st.caption("One proof engine, multiple domains. The success oracle is `cleared` — proven by running the artifact.")
+
+    sec = load_json(args.results)
+    a11y = load_json(args.webgate)
+
+    if not sec and not a11y:
+        st.warning(
+            f"No results loaded. Provide --results {args.results!r} (run `make eval`) and/or "
+            f"--webgate {args.webgate!r} (run `python -m harness.webgate -o ...`)."
+        )
+
+    if sec:
+        _render_security(st, sec)
+        st.divider()
+    if a11y:
+        _render_a11y(st, a11y)
+        st.divider()
+
+    st.header("⚡ GPU co-residency (rocm-smi) — the >80 GB AMD proof")
+    if st.button("Capture rocm-smi snapshot"):
         st.text(rocm_smi_snapshot(repo_root))
     else:
-        st.caption("Click to capture a one-shot rocm-smi VRAM/util snapshot.")
+        st.caption("Click to capture VRAM/util — expect >80 GB with the co-resident fixer+judge.")
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    """Entry point. Imports streamlit lazily so the module stays importable on CPU hosts."""
     args = parse_args(argv)
     try:
         import streamlit as st  # type: ignore
     except ImportError:
         sys.stderr.write(
-            "streamlit is not installed. Install the harness extras "
-            "(pip install -r requirements-harness.txt) and run with:\n"
-            "  streamlit run ui/dashboard.py -- --results results/eval_finetuned.json\n"
+            "streamlit is not installed. pip install -r requirements-harness.txt, then:\n"
+            "  streamlit run ui/dashboard.py -- --results results/eval_finetuned.json "
+            "--webgate results/webgate_positive.json\n"
         )
         return 2
     _render(st, args)
     return 0
 
 
-# Streamlit executes the script top-to-bottom (not via __main__), so render on import
-# when running under `streamlit run`. Guard so plain `python ui/dashboard.py` also works.
+# Streamlit executes top-to-bottom (not via __main__); render on import under `streamlit run`.
 if __name__ == "__main__":
     raise SystemExit(main())
 else:  # pragma: no cover - executed under `streamlit run`
@@ -178,5 +220,4 @@ else:  # pragma: no cover - executed under `streamlit run`
 
         _render(_st, parse_args())
     except Exception:
-        # Not running under streamlit (e.g. plain import for tests) — do nothing.
         pass
