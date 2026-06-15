@@ -94,6 +94,11 @@ baseline: ## Run the fair few-shot+retry baseline (identical bugs/gate)
 train: ## LoRA SFT on the MI300X (reads config/train.yaml)
 	$(PY) -m train.finetune_lora --config $(TRAIN_CONFIG)
 
+.PHONY: train-quick
+train-quick: ## Guaranteed bootstrap LoRA on the tracked seed set (proves the pipeline tonight)
+	$(PY) -m train.build_seed_sft
+	$(PY) -m train.finetune_lora --config config/train_quick.yaml
+
 .PHONY: serve
 serve: ## Print the exact co-resident vLLM fixer+judge launch commands
 	$(PY) -m serving.launch_vllm --config $(SERVE_CONFIG) --print

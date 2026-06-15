@@ -1,0 +1,21 @@
+# Quick bootstrap LoRA fine-tune — guaranteed to run tonight in one command.
+# Uses the small tracked seed set (train/seed_sft.jsonl, 10 clean vuln->fixed pairs).
+# This proves the fine-tune pipeline end-to-end and gives a directional before/after;
+# swap `data` to the full deduped corpus (make prep -> data/sft/train.jsonl) for the
+# headline number. Consumed by train/finetune_lora.py (TrainConfig.from_yaml).
+
+model: "Qwen/Qwen2.5-Coder-7B-Instruct"   # serve this same base with --enable-lora afterwards
+data: "train/seed_sft.jsonl"
+out: "models/fixer-lora-seed"
+epochs: 3.0                                 # tiny dataset -> a few epochs; ~minutes on MI300X
+lr: 0.0002
+batch_size: 1
+grad_accum: 8
+max_seq_len: 2048
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+warmup_ratio: 0.03
+seed: 13
+logging_steps: 2
+save_steps: 50
