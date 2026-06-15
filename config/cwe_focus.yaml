@@ -1,1 +1,84 @@
-See file on disk (3733 bytes).
+# PatchPilot v2 — CWE focus map (single source of truth for the dual-SAST AND-gate).
+#
+# Schema (read by harness/layers/sast.py and data/prep/build_eval_set.py):
+#   cwes:
+#     - id: CWE-XX
+#       name: human label
+#       semgrep: { rule_ids: [ ... ] }   # Semgrep rule ids to scope findings to
+#       codeql:  [ ... ]                  # CodeQL query ids (java-security-extended)
+#
+# Only CWEs LISTED here are treated as "Semgrep-covered" for the coverage stratum.
+# These are the CWEs the free Semgrep Community ruleset + CodeQL detect cleanly on
+# Java — keep the demo on these for a reliable red->green. Rule ids are scoping hints;
+# if a listed id is absent in your installed pack the layer still runs the full config.
+
+cwes:
+  - id: CWE-89
+    name: SQL Injection
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.sqli.jdbc-sqli.jdbc-sqli
+        - java.lang.security.audit.formatted-sql-string.formatted-sql-string
+        - java.lang.security.audit.sqli.jdbc-sql-injection.jdbc-sql-injection
+    codeql:
+      - java/sql-injection
+
+  - id: CWE-79
+    name: Cross-Site Scripting (XSS)
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.xss.no-direct-response-writer.no-direct-response-writer
+        - java.servlets.security.audit.tainted-html-response.tainted-html-response
+    codeql:
+      - java/xss
+
+  - id: CWE-22
+    name: Path Traversal
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.tainted-file-path.tainted-file-path
+    codeql:
+      - java/path-injection
+
+  - id: CWE-78
+    name: OS Command Injection
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.command-injection-process-builder.command-injection-process-builder
+        - java.lang.security.audit.tainted-cmd-from-http-request.tainted-cmd-from-http-request
+    codeql:
+      - java/command-line-injection
+
+  - id: CWE-611
+    name: XML External Entity (XXE)
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.xxe.documentbuilderfactory-disallow-doctype-decl-missing.documentbuilderfactory-disallow-doctype-decl-missing
+    codeql:
+      - java/xxe
+
+  - id: CWE-502
+    name: Unsafe Deserialization
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.object-deserialization.object-deserialization
+    codeql:
+      - java/unsafe-deserialization
+
+  - id: CWE-327
+    name: Broken / Risky Cryptographic Algorithm
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.crypto.use-of-md5.use-of-md5
+        - java.lang.security.audit.crypto.use-of-des.use-of-des
+        - java.lang.security.audit.crypto.weak-hash.weak-hash
+    codeql:
+      - java/weak-cryptographic-algorithm
+
+  - id: CWE-90
+    name: LDAP Injection
+    semgrep:
+      rule_ids:
+        - java.lang.security.audit.ldap-injection.ldap-injection
+    codeql:
+      - java/ldap-injection

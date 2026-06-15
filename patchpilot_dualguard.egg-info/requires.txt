@@ -1,9 +1,0 @@
-pyyaml==6.0.2
-javalang==0.13.0
-requests==2.32.3
-numpy==2.1.2
-
-[harness]
-semgrep==1.86.0
-streamlit==1.39.0
-pytest==8.3.3

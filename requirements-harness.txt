@@ -1,1 +1,14 @@
-See file on disk (977 bytes).
+# PatchPilot v2 — CPU/JVM verification-harness dependencies (laptop or pod CPU).
+# The GPU stack (vllm/peft/trl/torch) is in requirements-cloud.txt and is NOT needed
+# to run the gate, the tests, or the offline demo.
+#
+# External tools that are NOT pip packages (install separately):
+#   - Vul4J        : pip install vul4j  (needs JDK 7/8/11/16) OR docker pull tuhhsoftsec/vul4j
+#   - CodeQL CLI   : scripts/setup_codeql.sh  (downloads the pinned bundle)
+
+javalang==0.13.0        # pure-Python Java parser for the AST non-deletion guard
+pyyaml==6.0.2           # config loading (gate.yaml / cwe_focus.yaml / eval.yaml)
+semgrep==1.86.0         # one half of the dual-SAST AND-gate
+requests==2.32.3        # OpenAI-compatible HTTP client (serve.dualguard)
+streamlit==1.39.0       # the demo dashboard (ui/dashboard.py)
+pytest==8.3.3           # unit suite (tests/)

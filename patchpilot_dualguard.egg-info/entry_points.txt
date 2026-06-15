@@ -1,5 +1,0 @@
-[console_scripts]
-pp-build-eval = data.prep.build_eval_set:main
-pp-eval = eval.run_eval:main
-pp-gate = harness.gate:main
-pp-prep = data.prep.prepare_sft:main

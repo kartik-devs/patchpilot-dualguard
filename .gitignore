@@ -1,1 +1,62 @@
-See file on disk (973 bytes).
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.so
+
+# ── Virtual envs ──
+.venv/
+venv/
+env/
+.python-version
+
+# ── PatchPilot data / models / artifacts (PUBLIC DATA ONLY; never commit data) ──
+data/raw/
+data/sft/
+data/eval/
+data/checkouts/
+data/dpo/
+data/**/*.jsonl
+models/
+results/
+artifacts/
+verdict*.json
+*.tar
+*.tar.gz
+*.zip
+
+# ── Secrets / credentials (NEVER commit) ──
+.env
+.env.*
+*.pem
+*.key
+secrets/
+**/token*.txt
+.hf_token
+
+# ── CodeQL / Semgrep local installs ──
+codeql/
+codeql-bundle*/
+.semgrep/
+
+# ── TCS-confidential — keep OUT of any public repo ──
+photos/
+*.ppt
+*.pptx
+handbook*
+*hackathon*sheet*
+
+# ── Editor / OS ──
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp

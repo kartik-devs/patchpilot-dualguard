@@ -1,1 +1,20 @@
-See file on disk (914 bytes).
+# PatchPilot v2 — GPU dependencies for the AMD MI300X (ROCm) notebook ONLY.
+# Install on the pod:  pip install -r requirements-cloud.txt
+#
+# IMPORTANT (ROCm): the AMD AI Notebook image ships a ROCm build of PyTorch already.
+# Do NOT `pip install torch` from PyPI (that pulls the CUDA build). If you must,
+# use the AMD ROCm wheel index:  https://repo.radeon.com/rocm/manylinux/...  (or the
+# image's preinstalled torch). vLLM/PEFT/TRL on the image are ROCm-aware.
+
+# Serving + inference
+vllm                     # OpenAI-compatible server (ROCm build on the AMD image)
+
+# Fine-tuning stack
+transformers>=4.46
+peft>=0.13               # LoRA adapters
+trl>=0.12                # SFTTrainer / DPOTrainer
+datasets>=3.0
+accelerate>=1.0
+sentencepiece            # Qwen tokenizer
+huggingface-hub          # model download (huggingface-cli)
+# bitsandbytes           # only if you do 4-bit; on ROCm BF16 LoRA needs no quantization
