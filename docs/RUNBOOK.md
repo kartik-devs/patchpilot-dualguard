@@ -57,53 +57,61 @@ human patch and rejecting delete-the-sink. (This already works today.)
 
 ---
 
-## Phase 2 — First GPU session: serve + ONE bug red→green (~2 GPU-hrs)
+## Phase 2 — First GPU session: PROVE THE AMD STORY (>80 GB config FIRST, ~2–3 GPU-hrs)
 
-This is the **win condition**. Get it before anything fancy.
+**This session's deliverable is the marquee AMD artifact:** a live `rocm-smi` showing
+**>80 GB of model on one MI300X** — something an 80 GB H100/A100 physically cannot do.
+The verification gates run on CPU (correct — you don't burn a GPU on a linter); the
+GPU's job is the *intelligence at scale*. Make that visible FIRST, not as an afterthought.
 
-**2a. Pod setup (once per session — storage is wiped, deps don't persist):**
+**2a. Validate + 7B smoke + START the big download (downloads are the long pole):**
 ```bash
 bash scripts/setup_cloud.sh                # pip installs (vllm/peft/trl) + hf + git
 amd-smi || rocm-smi                         # confirm 1× MI300X, 192 GB
-huggingface-cli download Qwen/Qwen2.5-Coder-7B-Instruct   # start with 7B (fast, safe)
+# quick smoke that vLLM works on ROCm AT ALL:
+vllm serve Qwen/Qwen2.5-Coder-7B-Instruct --served-model-name fixer --port 8000 \
+  --max-model-len 8192 --gpu-memory-utilization 0.4 &
+curl -s localhost:8000/v1/models | python -m json.tool   # JSON => ROCm/vLLM works
+# pull the BIG models for the load-bearing config (slow — start EARLY):
+huggingface-cli download Qwen/Qwen2.5-Coder-32B-Instruct
+huggingface-cli download Qwen/Qwen2.5-32B-Instruct        # the judge (or -72B- for a bigger number)
+pkill -f "vllm serve"                       # stop the 7B smoke before bringing up the big config
 ```
 
-**2b. Serve the fixer (start with 7B to de-risk; move to 32B later):**
+**2b. Bring up the LOAD-BEARING config — fixer + judge co-resident on ONE card:**
 ```bash
-vllm serve Qwen/Qwen2.5-Coder-7B-Instruct \
-  --served-model-name fixer --port 8000 \
-  --max-model-len 16384 --gpu-memory-utilization 0.85 &
-# wait for "Application startup complete", then sanity check:
-curl -s localhost:8000/v1/models | python -m json.tool
+# serve/launch_vllm.sh dual = fixer(:8000) + judge(:8001), split --gpu-memory-utilization
+bash serve/launch_vllm.sh dual Qwen/Qwen2.5-Coder-32B-Instruct Qwen/Qwen2.5-32B-Instruct
+# in a 2nd terminal — THE MONEY SHOT (screen-record it):
+bash scripts/rocm_smi_watch.sh             # expect >80 GB (≈128–144 GB) used on ONE MI300X
 ```
+✅ **Checkpoint (the AMD win):** `rocm-smi` shows two 32B-class models co-resident at
+**>80 GB on a single MI300X**. Capture the clip + a still NOW. Deck line:
+*"The fixer and its own judge live on one AMD card — impossible below 192 GB. Show me
+an 80 GB GPU doing this."*
 
-**2c. Build a SMALL eval subset + checkout the demo bug:**
-```bash
-# pick 3–5 well-covered CWEs (SQLi/XSS/path-traversal) that Semgrep+CodeQL detect cleanly
-printf "VUL4J-10\nVUL4J-12\nVUL4J-43\n" > data/raw/vul4j_ids.txt
-make build-eval                            # writes data/eval/manifest.jsonl
-```
+**2c. Fallback ladder — ALWAYS cross 80 GB (take the highest rung that's stable):**
+1. co-resident **32B fixer + 72B judge** (~144 GB) — best number.
+2. **70B fixer alone** (~140 GB) — "doesn't fit on 80 GB, period."
+3. co-resident **2× 32B** (~128 GB).
+4. floor: **32B + big batch / long-context** to push the KV cache past 80 GB.
+   A 7B alone (~30 GB) does NOT answer "use the card" — never ship that as the headline.
 
-**2d. Drive ONE bug through generate → gate (the golden path):**
+**2d. THEN one bug red→green** using the big served fixer (the golden path):
 ```bash
-# Architecture A (gate on pod): one command does generate + gate + rate
+printf "VUL4J-10\nVUL4J-12\nVUL4J-43\n" > data/raw/vul4j_ids.txt   # well-covered CWEs
+make build-eval                                                     # data/eval/manifest.jsonl
 make eval EVAL_SET=data/eval/manifest.jsonl MODEL_TAG=base \
      FIXER_URL=http://localhost:8000/v1 FIXER_MODEL=fixer N_RETRIES=0
-# inspect results/eval_base.json -> look for a bug where base is NOT cleared (that's your demo bug)
+# find a bug the base model FAILS -> that's your demo case.
 ```
-✅ Checkpoint: at least one bug shows the gate producing a verdict end-to-end on
-**real Vul4J** (compile + regression + PoV + Semgrep + CodeQL + AST). Note which
-CWE/bug the base model FAILS — that becomes the demo case.
+✅ Checkpoint: the gate produces a verdict end-to-end on **real Vul4J** (compile +
+regression + PoV + Semgrep + CodeQL + AST), driven by the big model on the MI300X.
 
-> Architecture B: run `make eval` on the **laptop** after downloading the pod's
-> generated patches, or generate with `python -m eval.run_eval ... ` pointed at a
-> patches file. Keep the manifest + checkouts on the laptop.
-
-**2e. Capture the 192 GB proof EARLY (while GPUs are free):**
-```bash
-# in a second terminal, with the (later) co-resident 32B+judge running:
-bash scripts/rocm_smi_watch.sh             # screen-record this showing ~128 GB used
-```
+> Architecture B (gate on laptop): run `make eval` on the laptop after downloading the
+> pod's generated patches; keep the manifest + Vul4J checkouts on the laptop.
+> Bonus: the SAME served model also powers WebGate — `python -m harness.webgate
+> --original webgate/demo/broken.html --fixer-url http://localhost:8000/v1 --fixer-model fixer`.
 
 ---
 
@@ -135,10 +143,10 @@ python -m eval.metrics --results results/eval_finetuned.json   # stratified tabl
 split by source and Semgrep-covered. Report a sober honest number (35–50% is a WIN
 with this gate). Save both JSONs.
 
-> The DUAL-32B co-residency (fixer + judge) belongs here for the AMD WOW: serve a
-> second 32B as `judge` on port 8001 with split `--gpu-memory-utilization`, confirm
-> >80 GB occupancy on rocm-smi. If two-32B is unstable in the budget, demo
-> 32B-fixer + smaller judge and use the **pre-recorded** rocm-smi proof.
+> The AMD WOW (>80 GB co-resident fixer+judge) was captured in **Phase 2** — reuse
+> that still/clip here on Slide 4. If you couldn't bring up the big config Mon,
+> retry a fallback-ladder rung now; the rate is the story, the rocm-smi shot is the
+> sponsor proof — you want both.
 
 ---
 
@@ -164,9 +172,9 @@ make ui RESULTS=results/eval_finetuned.json   # Streamlit: 5 badges + fail→pas
 | When | Focus | GPU |
 |---|---|---|
 | **Mon AM** | Step 0 decision + Phase 1 (repo green on pod & laptop) | 0 |
-| **Mon PM** | Phase 2: serve 7B + ONE bug red→green end-to-end + capture rocm-smi | ~2h |
-| **Tue AM** | Phase 3: prep data + LoRA train | ~1.5h |
-| **Tue PM** | Phase 4: finetuned vs baseline eval → the number; bring up 32B+judge co-residency | ~3h |
+| **Mon PM** | Phase 2: bring up the **>80 GB co-resident config + capture rocm-smi** (the AMD win) + one bug red→green | ~2–3h |
+| **Tue AM** | Phase 3: prep data + LoRA train (on the big model if budget allows) | ~1.5h |
+| **Tue PM** | Phase 4: finetuned vs baseline eval → the number (co-residency already captured Mon) | ~3h |
 | **Wed AM** | Phase 5: dashboard + record demo + build slides | ~1h |
 | **Wed PM** | Final eval re-run if needed + **submit by 6 PM** | ~1h |
 
