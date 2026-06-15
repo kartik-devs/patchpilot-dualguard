@@ -36,9 +36,9 @@ pp-prep = "data.prep.prepare_sft:main"
 pp-build-eval = "data.prep.build_eval_set:main"
 
 [tool.setuptools]
-# Explicit package list: the implementers built both the spec layout (training/,
-# serving/, eval/) and helper shims (data/, train/, serve/). List every package
-# that ships importable code so editable installs expose them all.
+# Explicit package list. Canonical layout: harness(.layers), eval, data(.prep),
+# serving, serve, train. The flat data/*.py and harness/*.py are thin back-compat
+# shims re-exporting the canonical modules (single source of truth).
 packages = [
     "harness",
     "harness.layers",
@@ -47,7 +47,6 @@ packages = [
     "data.prep",
     "serving",
     "serve",
-    "training",
     "train",
 ]
 
