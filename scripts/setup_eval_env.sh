@@ -18,8 +18,17 @@ if [ ! -x /opt/semgrep-venv/bin/semgrep ]; then
 fi
 export SEMGREP_BIN=/opt/semgrep-venv/bin/semgrep
 
-# --- vul4j CLI (its own venv; the console-script shebang runs its own python) ---
-export VUL4J_BIN=/root/vul4j/.venv/bin/vul4j
+# --- vul4j CLI: auto-detect (path varies: project venv, uv tool bin, ~/.local) --
+if [ -z "${VUL4J_BIN:-}" ] || [ ! -x "${VUL4J_BIN:-}" ]; then
+  for _cand in /root/vul4j/.venv/bin/vul4j "$HOME/.local/bin/vul4j" \
+               /root/.local/bin/vul4j "$(command -v vul4j 2>/dev/null)"; do
+    if [ -n "$_cand" ] && [ -x "$_cand" ]; then VUL4J_BIN="$_cand"; break; fi
+  done
+fi
+if [ -z "${VUL4J_BIN:-}" ] || [ ! -x "${VUL4J_BIN:-}" ]; then
+  VUL4J_BIN="$(find /root /usr/local /opt -path '*/bin/vul4j' -type f 2>/dev/null | head -1)"
+fi
+export VUL4J_BIN
 
 # --- JDK8 + Maven (vul4j picks the per-bug JDK from vul4j.ini; needs mvn on PATH) ---
 export JAVA_HOME=/opt/jdks/jdk8
