@@ -521,6 +521,7 @@ def sast_and_gate(
     semgrep_config: str = "p/java",
     codeql_suite: str = "java-security-extended",
     cwe_focus_path: str = "config/cwe_focus.yaml",
+    semgrep_required: bool = True,
     codeql_required: bool = False,
 ) -> SastOutcome:
     """Run Semgrep + CodeQL on the patched file, scope to CWE, and AND-gate.
@@ -575,8 +576,12 @@ def sast_and_gate(
             rule_ids=None,
         )
         if "error" in sg.raw:
-            notes.append(f"semgrep error: {sg.raw['error']}")
-            semgrep_clean = False
+            if semgrep_required:
+                semgrep_clean = False
+                notes.append(f"semgrep error (required -> FAIL): {sg.raw['error']}")
+            else:
+                semgrep_clean = True
+                notes.append(f"semgrep SKIPPED (error, not required): {sg.raw['error']}")
         else:
             scoped = filter_by_cwe(sg, cwe, cwe_focus_path)
             on_file = _scope_to_file(scoped.findings, target_rel, src_root)
@@ -587,8 +592,15 @@ def sast_and_gate(
                 f"(clean={semgrep_clean})"
             )
     except SemgrepNotInstalled as exc:
-        semgrep_clean = False
-        notes.append(str(exc))
+        if semgrep_required:
+            semgrep_clean = False
+            notes.append(f"semgrep not installed (required -> FAIL): {exc}")
+        else:
+            semgrep_clean = True
+            notes.append(
+                "semgrep SKIPPED (not installed; not required this run). "
+                "PoV-flip + regression + AST remain the binding gates."
+            )
 
     # ---- CodeQL (corroboration-only unless codeql_required) ------------- #
     codeql_findings: List[Finding] = []

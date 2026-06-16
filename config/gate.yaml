@@ -19,6 +19,11 @@ cwe_focus_path: "config/cwe_focus.yaml"
 # unusable (not reproducible) and yields an all-False verdict.
 require_baseline_pov_fail: true
 
+# Semgrep is the core SAST and mandatory by default. If it cannot be installed
+# on a given pod, set this false: the executable PoV-flip + regression + AST guard
+# remain the binding gates, and Semgrep degrades to corroboration-only.
+semgrep_required: true
+
 # CodeQL is corroboration-only by default: when false, an absent or erroring
 # CodeQL is skipped-as-clean so Semgrep + the executable PoV/regression tests are
 # the binding gates (Semgrep is always mandatory). Set true ONLY for the CodeQL

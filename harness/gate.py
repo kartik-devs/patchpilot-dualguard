@@ -62,6 +62,7 @@ class GateConfig:
     codeql_suite: str = "java-security-extended"
     cwe_focus_path: str = "config/cwe_focus.yaml"
     require_baseline_pov_fail: bool = True
+    semgrep_required: bool = True
     codeql_required: bool = False
 
     @classmethod
@@ -282,6 +283,7 @@ def run_gate(
             semgrep_config=cfg.semgrep_config,
             codeql_suite=cfg.codeql_suite,
             cwe_focus_path=cfg.cwe_focus_path,
+            semgrep_required=cfg.semgrep_required,
             codeql_required=cfg.codeql_required,
         )
         semgrep_clean = bool(getattr(sast_out, "semgrep_clean", False))
