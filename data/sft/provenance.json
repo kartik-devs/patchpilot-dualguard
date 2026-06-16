@@ -1,0 +1,6 @@
+{
+  "raw_java_pairs": 2483,
+  "after_vul4j_holdout": 2395,
+  "after_temporal_cut": 931,
+  "after_dedup": 770
+}

@@ -14,20 +14,27 @@ dependency** and lock the merit before the risky build-flakiness step.
 
 ---
 
-## Step 1 — Real leakage-free corpus FIRST (CPU/network, ~0–2 h, no GPU, no Vul4J)
-This makes "fine-tuned beats base" an *honest* claim and depends on nothing fragile.
+## Step 1 — Real leakage-free corpus FIRST (CPU/network, no GPU, no Vul4J)
+Makes "fine-tuned beats base" an *honest* claim; depends on nothing fragile. The
+builder + the 76-CVE/87-repo holdout (config/vul4j_dataset.csv, committed) are
+VERIFIED working. **Run on the POD** — CVEfixes v1.0.8 is a 12.7 GB zip (fast there).
 ```bash
-# get CVEfixes (Zenodo 10.5281/zenodo.4476563) + the Vul4J CSV (for holdout)
-#   gunzip -k CVEfixes.sql.gz && sqlite3 CVEfixes.db < CVEfixes.sql
-#   wget the official vul4j_dataset.csv into data/raw/
+apt-get install -y unzip sqlite3
+wget -O CVEfixes.zip "https://zenodo.org/records/13118970/files/CVEfixes_v1.0.8.zip?download=1"
+unzip -o CVEfixes.zip
+SQL=$(find . -name 'CVEfixes*.sql*' | head -1)             # the SQL dump inside
+case "$SQL" in *.gz) gunzip -kf "$SQL"; SQL="${SQL%.gz}";; esac
+sqlite3 CVEfixes.db < "$SQL"                                # build the SQLite DB (~minutes)
 pip install datasketch
 python -m data.prep.build_cvefixes_corpus --db CVEfixes.db \
     --out data/sft/train.jsonl --provenance data/sft/provenance.json \
-    --vul4j-csv data/raw/vul4j_dataset.csv --cutoff 2021-01-01
+    --vul4j-csv config/vul4j_dataset.csv --cutoff 2021-01-01   # holdout CSV already in repo
 ```
 ✅ Output: `data/sft/train.jsonl` + the **4-number provenance table**
 (raw → after Vul4J holdout → after temporal cut → after dedup). *That table is the
 merit.* Target ~1–3k clean pairs. If thin, top up with JavaVFC (Zenodo 13731781).
+**Tip:** `git add -f data/sft/train.jsonl && git commit && git push` it (small) so it
+survives the wipe and you can re-LoRA next session without rebuilding the 12.7 GB DB.
 
 ## Step 2 — Real LoRA on that corpus (~0.5–1.5 GPU-h)
 Reuse the working pipeline + the SAME hyperparams (no tuning time lost):
