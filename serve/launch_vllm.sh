@@ -45,16 +45,23 @@ case "$MODE" in
     ;;
 
   ft)
-    BASE="${2:-$FIXER_DEFAULT}"
-    ADAPTER="${3:-models/fixer-lora}"
-    echo "[serve] fine-tuned fixer: base=$BASE adapter=$ADAPTER"
+    # base-vs-LoRA from ONE server: do NOT rename the base — let the OpenAI
+    # `model` field route. This exposes BOTH `fixer` (base) and `fixer-ft` (LoRA)
+    # on :8000, so `make eval MODEL_TAG=base FIXER_MODEL=fixer` and
+    # `MODEL_TAG=finetuned FIXER_MODEL=fixer-ft` both hit this one process.
+    BASE="${2:-Qwen/Qwen2.5-Coder-32B-Instruct}"   # MUST match adapter's base_model_name_or_path
+    ADAPTER="${3:-models/fixer-lora-real}"
+    echo "[serve] base+LoRA on one server: base=$BASE  adapter=$ADAPTER"
+    echo "[serve] exposes  fixer (base)  AND  fixer-ft (LoRA)  on :8000"
     nohup vllm serve "$BASE" \
       --enable-lora --lora-modules "fixer-ft=$ADAPTER" \
-      --served-model-name fixer-ft --port 8000 \
-      --max-model-len 16384 --gpu-memory-utilization 0.90 \
-      > /tmp/vllm_fixer-ft.log 2>&1 &
-    echo "[serve] fixer-ft PID $!  (log: /tmp/vllm_fixer-ft.log)"
-    wait_ready 8000 fixer-ft
+      --max-lora-rank 16 --served-model-name fixer --port 8000 \
+      --max-model-len 16384 --gpu-memory-utilization 0.90 --dtype bfloat16 \
+      > /tmp/vllm_fixer.log 2>&1 &
+    echo "[serve] fixer (+fixer-ft) PID $!  (log: /tmp/vllm_fixer.log)"
+    wait_ready 8000 fixer
+    echo "[serve] confirm BOTH ids before spending eval budget:"
+    echo "[serve]   curl -s localhost:8000/v1/models | python -m json.tool   # expect 'fixer' AND 'fixer-ft'"
     ;;
 
   dual)
