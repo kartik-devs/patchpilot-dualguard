@@ -563,13 +563,16 @@ def sast_and_gate(
     # ---- Semgrep -------------------------------------------------------- #
     semgrep_findings: List[Finding] = []
     semgrep_clean = False
-    focus = _load_cwe_focus(cwe_focus_path)
-    pinned_rule_ids = sorted(_rule_ids_for_cwe(focus, cwe)["semgrep"]) or None
+    # Run the full Semgrep pack (config, e.g. p/java) and scope to the bug's CWE
+    # POST-HOC via filter_by_cwe below. Bare rule-ids are NOT valid `--config`
+    # targets (only p/* packs, r/* registry refs, or file paths are), so passing
+    # them as configs makes Semgrep error -> a false "not clean". The cwe_focus
+    # rule-ids are scoping hints applied by filter_by_cwe, not Semgrep configs.
     try:
         sg = run_semgrep(
             file_path,
             config=semgrep_config,
-            rule_ids=pinned_rule_ids,
+            rule_ids=None,
         )
         if "error" in sg.raw:
             notes.append(f"semgrep error: {sg.raw['error']}")
