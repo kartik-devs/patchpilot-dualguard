@@ -1,0 +1,19 @@
+# Curated Vul4J bug IDs for the merit eval (research-verified). Copy to
+# data/raw/vul4j_ids.txt for `make build-eval`. Pre-filter with `vul4j reproduce`
+# and compute rates ONLY over the bugs that actually build/reproduce (the "green set")
+# so build flakiness never pollutes the base-vs-LoRA numbers.
+#
+# id        CWE                         confidence  note
+VUL4J-50  # CWE-79  XSS                 high   javamelody — cleanest (1 file/1 hunk); use as the FIRST smoke test
+VUL4J-59  # CWE-79  XSS                 high   jsoup — tiny self-contained lib, very fast build
+VUL4J-47  # CWE-611 XXE                 high   jackson-dataformat-xml — XXE, SAST flagship rule
+VUL4J-64  # CWE-611 XXE                 high   OpenRefine XmlImporter — classic disable-DTD fix
+VUL4J-65  # CWE-22  Path Traversal      high   OpenRefine — textbook Zip-Slip
+VUL4J-41  # CWE-22  Path Traversal      high   plexus-archiver — zip entry outside dest
+VUL4J-25  # CWE-79  XSS                 high   sling-xss — dedicated XSS module
+VUL4J-43  # CWE-22  Path Traversal      high   rdf4j ZipUtil — multi-hunk
+VUL4J-78  # CWE-502 Deserialization     medium XStream — confirm reproduces (id>74, not in llm-vul 35-list)
+VUL4J-44  # CWE-310 Crypto/encoding     medium ESAPI — closest to CWE-327; PoV is a noisy parameterized test
+VUL4J-77  # CWE-502 Deserialization     medium swagger-parser — confirm reproduces (id>74)
+VUL4J-23  # CWE-79  XSS                 medium sling — alt to VUL4J-25 (use one, not both)
+VUL4J-6   # CWE-835 Infinite loop       high   commons-compress — SAST-neutral CONTROL only (not a SAST CWE)
