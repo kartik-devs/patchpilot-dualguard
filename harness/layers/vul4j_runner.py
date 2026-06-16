@@ -360,6 +360,12 @@ def _test_id_matches(target: str, candidate: str) -> bool:
         c_cls2, _, c_m2 = c_cls.rpartition(".")
         if c_cls2 == t_cls and c_m2 == t_m:
             return True
+    # Vul4J sometimes emits an id as <class><method> with NO separator (seen in
+    # its reproduce log and some test_results.json fields). Match that form too.
+    if not c_m and t_m and c_cls == f"{t_cls}{t_m}":
+        return True
+    if not t_m and c_m and t_cls == f"{c_cls}{c_m}":
+        return True
     if not t_m:
         return c_cls == t_cls
     return c_cls == t_cls and c_m == t_m
