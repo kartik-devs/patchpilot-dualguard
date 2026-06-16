@@ -1,0 +1,26 @@
+[
+  {
+    "file": "LoginDao.java",
+    "cwe": "CWE-89"
+  },
+  {
+    "file": "ProfileServlet.java",
+    "cwe": "CWE-79"
+  },
+  {
+    "file": "DownloadController.java",
+    "cwe": "CWE-22"
+  },
+  {
+    "file": "BackupRunner.java",
+    "cwe": "CWE-78"
+  },
+  {
+    "file": "PasswordHasher.java",
+    "cwe": "CWE-327"
+  },
+  {
+    "file": "FeedParser.java",
+    "cwe": "CWE-611"
+  }
+]

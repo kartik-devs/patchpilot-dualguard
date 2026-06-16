@@ -90,6 +90,10 @@ baseline: ## Run the fair few-shot+retry baseline (identical bugs/gate)
 		--n-retries $(N_RETRIES) -o results/eval_baseline.json
 
 # ─────────────────────────── Train / serve (cloud) ────────────────────────
+.PHONY: quick-eval
+quick-eval: ## FAST proof: Semgrep red->green on held-out vulnerable Java (no Vul4J)
+	$(PY) -m eval.build_samples && $(PY) -m eval.quick_eval --fixer-url $(FIXER_URL) --fixer-model $(FIXER_MODEL) --model-tag $(MODEL_TAG) -o results/quick_$(MODEL_TAG).json
+
 .PHONY: train
 train: ## LoRA SFT on the MI300X (reads config/train.yaml)
 	$(PY) -m train.finetune_lora --config $(TRAIN_CONFIG)
