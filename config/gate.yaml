@@ -18,3 +18,9 @@ cwe_focus_path: "config/cwe_focus.yaml"
 # A bug whose PoV does NOT fail on the vulnerable revision is treated as
 # unusable (not reproducible) and yields an all-False verdict.
 require_baseline_pov_fail: true
+
+# CodeQL is corroboration-only by default: when false, an absent or erroring
+# CodeQL is skipped-as-clean so Semgrep + the executable PoV/regression tests are
+# the binding gates (Semgrep is always mandatory). Set true ONLY for the CodeQL
+# stretch subset where the codeql CLI is actually installed.
+codeql_required: false

@@ -9,6 +9,8 @@ PYTEST ?= $(PY) -m pytest
 
 # Default knobs (override on the command line: make eval MODEL_TAG=baseline)
 EVAL_SET   ?= data/eval/manifest.jsonl
+VUL4J_META ?= config/vul4j_meta.json
+VJBENCH    ?=
 MODEL_TAG  ?= finetuned
 FIXER_URL  ?= http://localhost:8000/v1
 FIXER_MODEL ?= fixer
@@ -70,10 +72,10 @@ prep: ## Build the leakage-free SFT train/held-out JSONL from data/raw
 		--split temporal --min-jaccard 0.9 --seed 13
 
 .PHONY: build-eval
-build-eval: ## Assemble the Vul4J/VJBench eval manifest
+build-eval: ## Assemble the Vul4J eval manifest (+ VJBench only if VJBENCH=dir given)
 	$(PY) -m data.prep.build_eval_set --vul4j-ids data/raw/vul4j_ids.txt \
-		--vjbench data/raw/vjbench/ --out $(EVAL_SET) \
-		--cwe-focus config/cwe_focus.yaml
+		--vul4j-meta $(VUL4J_META) $(if $(strip $(VJBENCH)),--vjbench $(VJBENCH),) \
+		--out $(EVAL_SET) --cwe-focus config/cwe_focus.yaml
 
 .PHONY: eval
 eval: ## Generate + gate patches over the eval set, write strata results

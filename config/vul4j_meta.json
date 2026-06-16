@@ -1,0 +1,148 @@
+{
+  "VUL4J-6": {
+    "cwe_id": "CWE-835",
+    "project": "apache/commons-compress",
+    "vulnerable_file": "src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java",
+    "human_patch": "2a2f1dc48e22a34ddb72321a4db211da91aa933b",
+    "failing_tests": [
+      "org.apache.commons.compress.Test_CVE_2018_1324#testCVE_2018_1324"
+    ],
+    "notes": "Single main-src file changed; only file in diff. CWE-835 control bug (not a SAST CWE)."
+  },
+  "VUL4J-23": {
+    "cwe_id": "CWE-79",
+    "project": "apache/sling",
+    "vulnerable_file": "bundles/extensions/xss/src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java",
+    "human_patch": "7d2365a248943071a44d8495655186e4f14ea294",
+    "failing_tests": [
+      "org.apache.sling.xss.impl.XSSAPIImplTest#testEncodeForJSString",
+      "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidJSToken"
+    ],
+    "notes": "Commit not on current github.com/apache/sling (404 on .diff/.patch/API). Resolved via apache/sling-old-svn-mirror mirror, whose .diff for this SHA shows exactly XSSAPIImpl.java (main) + XSSAPIImplTest.java (test). Path confirmed to exist in the epicosy/VUL4J-23 reproduction checkout. failing_module=bundles/extensions/xss."
+  },
+  "VUL4J-25": {
+    "cwe_id": "CWE-79",
+    "project": "apache/sling-org-apache-sling-xss",
+    "vulnerable_file": "src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java",
+    "human_patch": "ec6764d165abc4df8cffd8439761bb2228887db9",
+    "failing_tests": [
+      "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHref",
+      "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHrefWithoutHrefConfig"
+    ],
+    "notes": "Diff changed XSSAPIImpl.java (main) + XSSAPIImplTest.java (test). Single-module repo (failing_module=root)."
+  },
+  "VUL4J-41": {
+    "cwe_id": "CWE-22",
+    "project": "codehaus-plexus/plexus-archiver",
+    "vulnerable_file": "src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java",
+    "human_patch": "58bc24e465c0842981692adbf6d75680298989de",
+    "failing_tests": [
+      "org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException"
+    ],
+    "notes": "Diff: AbstractUnArchiver.java (main fix) + ZipUnArchiverTest.java (test) + src/test/zips/zip-slip.zip (test fixture)."
+  },
+  "VUL4J-43": {
+    "cwe_id": "CWE-22",
+    "project": "eclipse/rdf4j",
+    "vulnerable_file": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java",
+    "human_patch": "df15a4d7a8f2789c043b27c9eafe1b30316cfa79",
+    "failing_tests": [
+      "org.eclipse.rdf4j.common.io.ZipUtilTest#testWriteEntryPathTraversing"
+    ],
+    "notes": "Diff: ZipUtil.java (main) + ZipUtilTest.java (test). failing_module=util, so path is module-prefixed."
+  },
+  "VUL4J-44": {
+    "cwe_id": "CWE-310",
+    "project": "ESAPI/esapi-java-legacy",
+    "vulnerable_file": "src/main/java/org/owasp/esapi/codecs/PercentCodec.java",
+    "human_patch": "b7cbc53f9cc967cf1a5a9463d8c6fef9ed6ef4f7",
+    "failing_tests": [
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]",
+      "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]"
+    ],
+    "notes": "Diff: PercentCodec.java (main) + CodecImmunityTest.java (test). PoV is a noisy parameterized test (15 cases; test class case in CSV is org.OWASP but actual package is org.owasp). Bracketed params contain no commas, so comma-split is safe."
+  },
+  "VUL4J-47": {
+    "cwe_id": "CWE-611",
+    "project": "FasterXML/jackson-dataformat-xml",
+    "vulnerable_file": "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java",
+    "human_patch": "eeff2c312e9d4caa8c9f27b8f740c7529d00524a",
+    "failing_tests": [
+      "com.fasterxml.jackson.dataformat.xml.SupportDTDDefaultsTest#testDTDAttempt"
+    ],
+    "notes": "Diff: XmlFactory.java (main fix) + SupportDTDDefaultsTest.java (test) + release-notes/VERSION (non-java doc). Single main-src file."
+  },
+  "VUL4J-50": {
+    "cwe_id": "CWE-79",
+    "project": "javamelody/javamelody",
+    "vulnerable_file": "javamelody-core/src/main/java/net/bull/javamelody/HtmlSessionInformationsReport.java",
+    "human_patch": "aacbc46151ff4ac1ca34ce0899c2a6113071c66e",
+    "failing_tests": [
+      "net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378"
+    ],
+    "notes": "Single main-src file changed (1 file/1 hunk); only file in diff. Cleanest smoke test."
+  },
+  "VUL4J-59": {
+    "cwe_id": "CWE-79",
+    "project": "jhy/jsoup",
+    "vulnerable_file": "src/main/java/org/jsoup/parser/TokeniserState.java",
+    "human_patch": "4edb78991f8d0bf87dafde5e01ccd8922065c9b2",
+    "failing_tests": [
+      "org.jsoup.parser.XmlTreeBuilderTest#testDoesHandleEOFInTag"
+    ],
+    "notes": "Diff: TokeniserState.java (main) + XmlTreeBuilderTest.java (test)."
+  },
+  "VUL4J-64": {
+    "cwe_id": "CWE-611",
+    "project": "OpenRefine/OpenRefine",
+    "vulnerable_file": "main/src/com/google/refine/importers/XmlImporter.java",
+    "human_patch": "6a0d7d56e4ffb420316ce7849fde881344fbf881",
+    "failing_tests": [
+      "com.google.refine.tests.importers.XmlImporterTests#ignoresDtds"
+    ],
+    "notes": "OpenRefine uses non-standard layout: main sources under main/src (not src/main/java), tests under main/tests/server/src. Diff: XmlImporter.java (main) + XmlImporterTests.java (test)."
+  },
+  "VUL4J-65": {
+    "cwe_id": "CWE-22",
+    "project": "OpenRefine/OpenRefine",
+    "vulnerable_file": "main/src/com/google/refine/importing/ImportingUtilities.java",
+    "human_patch": "e243e73e4064de87a913946bd320fbbe246da656",
+    "failing_tests": [
+      "com.google.refine.tests.importing.ImportingUtilitiesTests#testZipSlip"
+    ],
+    "notes": "OpenRefine non-standard layout: main/src. Diff: ImportingUtilities.java (main) + ImportingUtilitiesTests.java (test)."
+  },
+  "VUL4J-77": {
+    "cwe_id": "CWE-502",
+    "project": "swagger-api/swagger-parser",
+    "vulnerable_file": "modules/swagger-parser/src/main/java/io/swagger/parser/util/DeserializationUtils.java",
+    "human_patch": "4c6584306b40de9b2dfa9065c3a438cd918534af",
+    "failing_tests": [
+      "io.swagger.parser.util.SwaggerDeserializerTest#testCVE_2017_1000207"
+    ],
+    "notes": "Only one file in diff: DeserializationUtils.java (main). Module-prefixed path (failing_module=modules/swagger-parser)."
+  },
+  "VUL4J-78": {
+    "cwe_id": "CWE-502",
+    "project": "x-stream/xstream",
+    "vulnerable_file": "xstream/src/java/com/thoughtworks/xstream/XStream.java",
+    "human_patch": "f38a1da3ae9491930c2067c12cd2506738b21dab",
+    "failing_tests": [
+      "com.thoughtworks.acceptance.SecurityVulnerabilityTest#testCannotInjectEventHandlerWithUnconfiguredSecurityFramework"
+    ],
+    "notes": "XStream uses src/java for main sources (not src/main/java) and src/test for tests. Diff: XStream.java (main) + SecurityVulnerabilityTest.java (test). Module-prefixed (xstream/)."
+  }
+}

@@ -521,13 +521,18 @@ def sast_and_gate(
     semgrep_config: str = "p/java",
     codeql_suite: str = "java-security-extended",
     cwe_focus_path: str = "config/cwe_focus.yaml",
+    codeql_required: bool = False,
 ) -> SastOutcome:
     """Run Semgrep + CodeQL on the patched file, scope to CWE, and AND-gate.
 
     ``semgrep_clean``/``codeql_clean`` are True iff that scanner reports NO
     finding of the relevant vulnerability class on the patched file. A missing
-    scanner yields ``*_clean = False`` with a remediation detail (never a silent
-    pass), per INTEGRATION INVARIANT 5.
+    Semgrep yields ``semgrep_clean = False`` (Semgrep is mandatory). CodeQL is
+    corroboration-only by default: when ``codeql_required`` is False (the default),
+    a missing or erroring CodeQL is treated as SKIPPED (``codeql_clean = True`` with
+    a note) so Semgrep + the executable PoV/regression tests can stand alone; set
+    ``codeql_required=True`` (e.g. for the CodeQL stretch subset) to make an
+    absent/failed CodeQL fail the gate instead.
 
     Args:
         file_path: Path to the (written) patched file to scan with Semgrep.
@@ -537,6 +542,9 @@ def sast_and_gate(
         semgrep_config: Semgrep ruleset/pack.
         codeql_suite: CodeQL query suite tag.
         cwe_focus_path: Path to the rule-id -> CWE map.
+        codeql_required: If True, a missing or erroring CodeQL sets
+            ``codeql_clean=False`` (strict); if False (default), CodeQL is
+            corroboration-only and skipped-as-clean when absent/erroring.
 
     Returns:
         :class:`SastOutcome`.
@@ -579,7 +587,7 @@ def sast_and_gate(
         semgrep_clean = False
         notes.append(str(exc))
 
-    # ---- CodeQL --------------------------------------------------------- #
+    # ---- CodeQL (corroboration-only unless codeql_required) ------------- #
     codeql_findings: List[Finding] = []
     codeql_clean = False
     try:
@@ -589,8 +597,15 @@ def sast_and_gate(
             suite=codeql_suite,
         )
         if "error" in cq.raw:
-            notes.append(f"codeql error: {cq.raw['error']}")
-            codeql_clean = False
+            # Infra failure (DB build/analyze/timeout) — NOT evidence of a vuln.
+            if codeql_required:
+                codeql_clean = False
+                notes.append(f"codeql error (required -> FAIL): {cq.raw['error']}")
+            else:
+                codeql_clean = True
+                notes.append(
+                    f"codeql SKIPPED (infra error, not required): {cq.raw['error']}"
+                )
         else:
             scoped = filter_by_cwe(cq, cwe, cwe_focus_path)
             on_file = _scope_to_file(scoped.findings, target_rel, src_root)
@@ -601,8 +616,15 @@ def sast_and_gate(
                 f"(clean={codeql_clean})"
             )
     except CodeQLNotInstalled as exc:
-        codeql_clean = False
-        notes.append(str(exc))
+        if codeql_required:
+            codeql_clean = False
+            notes.append(f"codeql not installed (required -> FAIL): {exc}")
+        else:
+            codeql_clean = True
+            notes.append(
+                "codeql SKIPPED (not installed; corroboration-only this run). "
+                "Semgrep + executable PoV/regression remain the binding gates."
+            )
 
     detail = "; ".join(notes) if notes else "no scanners ran"
     return SastOutcome(

@@ -527,23 +527,34 @@ def _classify_regression_and_pov(
 
 
 def evaluate_patch(
-    bug: BugRecord, patch: Patch, output_dir: Optional[str] = None
+    bug: BugRecord,
+    patch: Patch,
+    output_dir: Optional[str] = None,
+    compile_timeout: int = 1200,
+    test_timeout: int = 1800,
 ) -> EvalOutcome:
-    """Apply+compile+test a candidate patch via ``vul4j evaluate``.
+    """Apply + compile + test a candidate patch IN PLACE on the checked-out bug.
 
-    Builds a Vul4J batch ``patches.json`` mapping the bug id to the candidate
-    file content, captures the ORIGINAL file contents (for the AST guard), writes
-    the patched file into the checkout, runs::
+    Drives the proven Vul4J primitives directly: write the candidate's full-file
+    content into the checkout, then ``vul4j compile -d <checkout>`` and
+    ``vul4j test -d <checkout>``, then parse ``<checkout>/VUL4J/test_results.json``.
 
-        vul4j evaluate <patches.json> -o <results.json> --output-dir <artifacts>
-
-    then reads the produced ``VUL4J/test_results.json`` to classify regression vs
-    PoV tests. All failures are caught and surfaced in ``detail`` (never crash).
+    This deliberately does NOT use ``vul4j evaluate``: upstream ``evaluate`` takes a
+    list of ``{vul_id, candidates:[{diff: <unified git diff>}]}`` records (applied
+    via ``git apply``), re-checks each bug out into ``/tmp`` (ignoring our
+    checkout), and writes results under ``<output-dir>/<vul_id>/<candidate>/VUL4J/``
+    — none of which matches the full-file content this gate produces or the
+    location we read. The in-place path reuses the SAME functions
+    :func:`baseline_pov` uses, so the baseline and post-patch runs are directly
+    comparable, and it operates on the already-checked-out tree with a warm Maven
+    cache. All failures are caught and surfaced in ``detail`` (never crash).
 
     Args:
         bug: The vulnerability under evaluation.
         patch: The candidate patch (full-file content).
-        output_dir: Optional artifacts directory; a temp dir is used if omitted.
+        output_dir: Unused; retained for call-site compatibility.
+        compile_timeout: ``vul4j compile`` timeout in seconds.
+        test_timeout: ``vul4j test`` timeout in seconds.
 
     Returns:
         :class:`EvalOutcome` with compile/regression/PoV booleans, the test
@@ -572,26 +583,15 @@ def evaluate_patch(
     if not original_code:
         original_code = _read_file_text(abs_target)
 
-    artifacts_dir = output_dir or tempfile.mkdtemp(prefix="vul4j_eval_")
-    os.makedirs(artifacts_dir, exist_ok=True)
-    patches_json = os.path.join(artifacts_dir, "patches.json")
-    results_json = os.path.join(artifacts_dir, "results.json")
-
-    # Vul4J batch-evaluate schema: {bug_id: {file: <rel path>, content: <full file>}}.
-    patches_payload = {
-        bug.id: {"file": rel, "content": patched_code}
-    }
-    try:
-        with open(patches_json, "w", encoding="utf-8") as handle:
-            json.dump(patches_payload, handle, indent=2)
-    except OSError as exc:
+    if not rel:
         return EvalOutcome(
             False, False, False, None, original_code, patched_code,
-            f"could not write patches.json: {exc}",
+            "evaluate aborted: no target file (patch.patched_file_path and "
+            "bug.vulnerable_file are both empty — check the eval manifest's "
+            "vulnerable_file metadata).",
         )
 
-    # Write the patched file into the checkout so `vul4j evaluate` sees it even
-    # if its schema expects an on-disk replacement rather than inline content.
+    # Write the candidate patch (full-file content) into the checkout, in place.
     try:
         _ensure_parent(abs_target)
         with open(abs_target, "w", encoding="utf-8") as handle:
@@ -602,84 +602,48 @@ def evaluate_patch(
             f"could not write patched file {abs_target}: {exc}",
         )
 
-    # Run the batch evaluator. Fail-soft: we still try to read test_results.json.
-    eval_detail = ""
+    # Compile the patched tree (same primitive baseline_pov uses).
     try:
-        proc = _run_vul4j(
-            [
-                "evaluate",
-                patches_json,
-                "-o",
-                results_json,
-                "--output-dir",
-                artifacts_dir,
-            ],
-            cwd=bug.checkout_dir,
-            timeout=3600,
-            check=False,
+        compiled, compile_log = compile_project(
+            bug.checkout_dir, timeout=compile_timeout
         )
-        eval_detail = _combined_log(proc)
     except Vul4JNotInstalled as exc:
         return EvalOutcome(
             False, False, False, None, original_code, patched_code,
             f"evaluate skipped: {exc}",
         )
-    except Vul4JError as exc:
-        eval_detail = str(exc)
+    if not compiled:
+        return EvalOutcome(
+            compiled=False,
+            regression_passed=False,
+            pov_passed=False,
+            summary=None,
+            original_code=original_code,
+            patched_code=patched_code,
+            detail=f"patched tree FAILED to compile. Last log:\n{compile_log[-2000:]}",
+        )
 
-    # Determine compile + apply outcome from results.json when available.
-    compiled = False
-    results_doc: Dict[str, Any] = {}
-    if os.path.isfile(results_json):
-        try:
-            with open(results_json, "r", encoding="utf-8") as handle:
-                results_doc = json.load(handle)
-        except (OSError, json.JSONDecodeError):
-            results_doc = {}
-
-    entry = _extract_eval_entry(results_doc, bug.id)
-    compiled = _entry_compiled(entry)
-
-    # Read the test_results.json produced by the evaluate run.
-    summary: Optional[TestSummary] = None
+    # Run the suite on the patched tree; classify regression vs PoV.
     try:
-        raw = _read_test_results(bug.checkout_dir)
-        summary = parse_test_results(raw)
+        raw = run_tests(bug.checkout_dir, timeout=test_timeout)
+    except Vul4JNotInstalled as exc:
+        return EvalOutcome(
+            True, False, False, None, original_code, patched_code,
+            f"compiled but test run skipped: {exc}",
+        )
     except Vul4JError as exc:
-        # Try the artifacts dir as a fallback location.
-        alt = os.path.join(artifacts_dir, "test_results.json")
-        if os.path.isfile(alt):
-            try:
-                with open(alt, "r", encoding="utf-8") as handle:
-                    summary = parse_test_results(json.load(handle))
-            except (OSError, json.JSONDecodeError, Vul4JError):
-                summary = None
-        if summary is None:
-            return EvalOutcome(
-                compiled,
-                False,
-                False,
-                None,
-                original_code,
-                patched_code,
-                f"evaluate produced no test_results.json: {exc}\n{eval_detail[-1000:]}",
-            )
+        return EvalOutcome(
+            True, False, False, None, original_code, patched_code,
+            f"compiled but test run failed: {exc}",
+        )
 
-    # If results.json did not give us a compile signal, infer it: a suite that
-    # ran tests must have compiled.
-    if entry is None and summary is not None:
-        compiled = compiled or (summary.running > 0)
-
+    summary = parse_test_results(raw)
     regression_passed, pov_passed, split_detail = _classify_regression_and_pov(
         summary, bug.pov_tests
     )
-
-    detail = (
-        f"compiled={compiled}; {split_detail}"
-        + (f"\n[evaluate stdout/stderr tail]\n{eval_detail[-800:]}" if eval_detail else "")
-    )
+    detail = f"compiled=True; {split_detail}"
     return EvalOutcome(
-        compiled=compiled,
+        compiled=True,
         regression_passed=regression_passed,
         pov_passed=pov_passed,
         summary=summary,

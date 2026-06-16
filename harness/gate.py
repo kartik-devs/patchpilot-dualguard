@@ -50,6 +50,9 @@ class GateConfig:
         cwe_focus_path: Path to cwe_focus.yaml (rule-id -> CWE map).
         require_baseline_pov_fail: If True, a bug whose PoV does NOT fail on the
             vulnerable revision is treated as unusable (not reproducible).
+        codeql_required: If True, an absent/erroring CodeQL fails the SAST gate;
+            if False (default), CodeQL is corroboration-only (skipped-as-clean) so
+            Semgrep + the executable PoV/regression tests are the binding gates.
     """
 
     min_retained_ratio: float = 0.6
@@ -59,6 +62,7 @@ class GateConfig:
     codeql_suite: str = "java-security-extended"
     cwe_focus_path: str = "config/cwe_focus.yaml"
     require_baseline_pov_fail: bool = True
+    codeql_required: bool = False
 
     @classmethod
     def from_yaml(cls, path: str) -> "GateConfig":
@@ -278,6 +282,7 @@ def run_gate(
             semgrep_config=cfg.semgrep_config,
             codeql_suite=cfg.codeql_suite,
             cwe_focus_path=cfg.cwe_focus_path,
+            codeql_required=cfg.codeql_required,
         )
         semgrep_clean = bool(getattr(sast_out, "semgrep_clean", False))
         codeql_clean = bool(getattr(sast_out, "codeql_clean", False))

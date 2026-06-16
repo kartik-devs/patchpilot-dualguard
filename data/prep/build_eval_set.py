@@ -88,7 +88,7 @@ def _vul4j_info(bug_id: str, timeout: int = 60) -> Optional[Dict[str, Any]]:
     """Call ``vul4j info <id>`` and parse JSON. None on any failure (graceful)."""
     try:
         cp = subprocess.run(
-            ["vul4j", "info", bug_id],
+            ["vul4j", "info", "-i", bug_id],  # upstream `info` requires -i/--id
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -263,7 +263,12 @@ def _iter_vjbench_records(vjbench_dir: str) -> List[Dict[str, Any]]:
     """
     root = Path(vjbench_dir)
     if not root.exists():
-        raise FileNotFoundError(f"--vjbench directory not found: {vjbench_dir}")
+        print(
+            f"[build_eval_set] WARNING: --vjbench dir not found ({vjbench_dir}); "
+            "skipping VJBench (Vul4J-only manifest is still written).",
+            file=sys.stderr,
+        )
+        return []
     records: List[Dict[str, Any]] = []
     for fp in sorted(root.rglob("*.json")) + sorted(root.rglob("*.jsonl")):
         try:
