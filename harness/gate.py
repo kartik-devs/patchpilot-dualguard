@@ -181,12 +181,16 @@ def run_gate(
     # ------------------------------------------------------------------ #
     base_failed = False
     base_detail = ""
+    baseline_failing: List[str] = []
     try:
         from harness.layers import vul4j_runner
 
         base = vul4j_runner.baseline_pov(bug)
         base_failed = bool(getattr(base, "pov_failed", False))
         base_detail = str(getattr(base, "detail", "") or "")
+        baseline_failing = list(
+            getattr(getattr(base, "summary", None), "failing_test_ids", []) or []
+        )
     except ImportError as exc:
         base_detail = (
             f"vul4j_runner unavailable: {exc}. Install Vul4J (Docker image "
@@ -225,7 +229,7 @@ def run_gate(
     try:
         from harness.layers import vul4j_runner
 
-        ev = vul4j_runner.evaluate_patch(bug, patch)
+        ev = vul4j_runner.evaluate_patch(bug, patch, baseline_failing_ids=baseline_failing)
         compiles = bool(getattr(ev, "compiled", False))
         regression_pass = bool(getattr(ev, "regression_passed", False))
         pov_passed = bool(getattr(ev, "pov_passed", False))

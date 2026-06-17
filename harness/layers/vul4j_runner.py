@@ -253,11 +253,17 @@ def _read_test_results(checkout_dir: str) -> Dict[str, Any]:
     Raises:
         Vul4JError: if the file is absent or not valid JSON.
     """
-    path = os.path.join(checkout_dir, "VUL4J", "test_results.json")
+    vdir = os.path.join(checkout_dir, "VUL4J")
+    # Vul4J 2.x writes VUL4J/testing_results.json; older docs say test_results.json.
+    path = os.path.join(vdir, "testing_results.json")
     if not os.path.isfile(path):
-        raise Vul4JError(
-            f"expected test results not found at {path}. Did `vul4j test` run?"
-        )
+        legacy = os.path.join(vdir, "test_results.json")
+        if os.path.isfile(legacy):
+            path = legacy
+        else:
+            raise Vul4JError(
+                f"expected test results not found at {path}. Did `vul4j test` run?"
+            )
     try:
         with open(path, "r", encoding="utf-8") as handle:
             return json.load(handle)
@@ -296,7 +302,10 @@ def parse_test_results(results: dict) -> TestSummary:
     Returns:
         A normalized :class:`TestSummary`.
     """
-    metrics = results.get("overall_metrics") or results.get("tests", {}) or {}
+    # Vul4J 2.x nests metrics/failures/passing under a top-level "tests" key;
+    # older shapes are flat. Unwrap so both parse correctly.
+    data = results.get("tests") if isinstance(results.get("tests"), dict) else results
+    metrics = data.get("overall_metrics") or {}
 
     def _metric(*keys: str) -> int:
         for key in keys:
@@ -307,7 +316,7 @@ def parse_test_results(results: dict) -> TestSummary:
                     return 0
         return 0
 
-    failures_raw = results.get("failures") or []
+    failures_raw = data.get("failures") or []
     failures: List[FailureRec] = []
     for item in failures_raw:
         if not isinstance(item, dict):
@@ -323,8 +332,8 @@ def parse_test_results(results: dict) -> TestSummary:
             )
         )
 
-    passing_tests = [str(t) for t in (results.get("passing_tests") or [])]
-    skipping_tests = [str(t) for t in (results.get("skipping_tests") or [])]
+    passing_tests = [str(t) for t in (data.get("passing_tests") or [])]
+    skipping_tests = [str(t) for t in (data.get("skipping_tests") or [])]
 
     return TestSummary(
         running=_metric("number_running", "running"),
@@ -499,7 +508,9 @@ def _read_file_text(path: str) -> str:
 
 
 def _classify_regression_and_pov(
-    summary: TestSummary, pov_tests: List[str]
+    summary: TestSummary,
+    pov_tests: List[str],
+    baseline_failing_ids: Optional[List[str]] = None,
 ) -> Tuple[bool, bool, str]:
     """Split tests into PoV vs regression and decide both booleans.
 
@@ -520,11 +531,15 @@ def _classify_regression_and_pov(
         # No explicit PoV: treat "no failures at all" as PoV-passing.
         pov_passed = summary.failing == 0 and summary.error == 0
 
-    # Regression: any failing test that is NOT a PoV test breaks behavior.
+    # Regression: a non-PoV test that FAILS on the patched tree AND did NOT already
+    # fail on the vulnerable baseline (env-flaky tests failing on both don't count as
+    # regressions — only NEW breakage introduced by the patch does).
+    baseline_failing_ids = baseline_failing_ids or []
     regression_failures = [
         fid
         for fid in summary.failing_test_ids
         if not any(_test_id_matches(pov, fid) for pov in pov_tests)
+        and not any(_test_id_matches(b, fid) for b in baseline_failing_ids)
     ]
     regression_passed = len(regression_failures) == 0
 
@@ -544,6 +559,7 @@ def evaluate_patch(
     output_dir: Optional[str] = None,
     compile_timeout: int = 1200,
     test_timeout: int = 1800,
+    baseline_failing_ids: Optional[List[str]] = None,
 ) -> EvalOutcome:
     """Apply + compile + test a candidate patch IN PLACE on the checked-out bug.
 
@@ -651,7 +667,7 @@ def evaluate_patch(
 
     summary = parse_test_results(raw)
     regression_passed, pov_passed, split_detail = _classify_regression_and_pov(
-        summary, bug.pov_tests
+        summary, bug.pov_tests, baseline_failing_ids
     )
     detail = f"compiled=True; {split_detail}"
     return EvalOutcome(
