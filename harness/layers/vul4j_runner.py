@@ -217,7 +217,13 @@ def checkout(bug_id: str, dest_dir: str) -> str:
     meta = os.path.join(dest_dir, "VUL4J")
     if os.path.isdir(meta) and os.listdir(meta):
         return dest_dir
-    os.makedirs(dest_dir, exist_ok=True)
+    # `vul4j checkout` asserts the dest dir does NOT already exist and creates it
+    # itself — so DON'T pre-create it. Clear any stale/partial dir and ensure only
+    # the PARENT exists.
+    if os.path.exists(dest_dir):
+        shutil.rmtree(dest_dir, ignore_errors=True)
+    parent = os.path.dirname(os.path.abspath(dest_dir))
+    os.makedirs(parent, exist_ok=True)
     _run_vul4j(["checkout", "--id", bug_id, "-d", dest_dir], timeout=1800)
     return dest_dir
 
