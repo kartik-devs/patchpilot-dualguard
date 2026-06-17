@@ -1,0 +1,384 @@
+{
+  "model_tag": "base",
+  "manifest": "data/eval/eval6.jsonl",
+  "n": 6,
+  "errors": [],
+  "overall": {
+    "n": 6,
+    "cleared": 1,
+    "rate": 0.16666666666666666,
+    "ci_low": 0.03005258587173032,
+    "ci_high": 0.563509436563646
+  },
+  "strata": {
+    "overall": {
+      "n": 6,
+      "cleared": 1,
+      "rate": 0.16666666666666666,
+      "ci_low": 0.03005258587173032,
+      "ci_high": 0.563509436563646
+    },
+    "semgrep-covered": {
+      "n": 6,
+      "cleared": 1,
+      "rate": 0.16666666666666666,
+      "ci_low": 0.03005258587173032,
+      "ci_high": 0.563509436563646
+    },
+    "semgrep-uncovered": {
+      "n": 0,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "vul4j": {
+      "n": 6,
+      "cleared": 1,
+      "rate": 0.16666666666666666,
+      "ci_low": 0.03005258587173032,
+      "ci_high": 0.563509436563646
+    },
+    "vjbench": {
+      "n": 0,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "vjbench-trans": {
+      "n": 0,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    }
+  },
+  "compare": {
+    "per_tag": {
+      "base": {
+        "n": 6,
+        "cleared": 1,
+        "rate": 0.16666666666666666,
+        "ci_low": 0.03005258587173032,
+        "ci_high": 0.563509436563646
+      }
+    },
+    "baseline_tag": "baseline",
+    "delta_vs_baseline": {}
+  },
+  "rows": [
+    {
+      "bug": {
+        "id": "VUL4J-50",
+        "project": "javamelody/javamelody",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-50",
+        "pov_tests": [
+          "net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378"
+        ],
+        "vulnerable_file": "javamelody-core/src/main/java/net/bull/javamelody/HtmlSessionInformationsReport.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-50",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=269 failing=1 error=7"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=269 failing=1 error=7"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; compiled=True; pov_passed=False (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=269 failing=1 error=7"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=144/144 ratio=1.000 (min=0.6); returns+throws patched/original=2/2; returns_kept=True"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-59",
+        "project": "jhy/jsoup",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-59",
+        "pov_tests": [
+          "org.jsoup.parser.XmlTreeBuilderTest#testDoesHandleEOFInTag"
+        ],
+        "vulnerable_file": "src/main/java/org/jsoup/parser/TokeniserState.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-59",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:23:04\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:23:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "retained_ratio=0.0; returns_kept=False; patched code failed to parse (javalang) -> rejected"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-47",
+        "project": "FasterXML/jackson-dataformat-xml",
+        "cwe": "CWE-611",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-47",
+        "pov_tests": [
+          "com.fasterxml.jackson.dataformat.xml.SupportDTDDefaultsTest#testDTDAttempt"
+        ],
+        "vulnerable_file": "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-47",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:25:14\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:25:17\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "retained_ratio=0.0; returns_kept=False; patched code failed to parse (javalang) -> rejected"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-64",
+        "project": "OpenRefine/OpenRefine",
+        "cwe": "CWE-611",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-64",
+        "pov_tests": [
+          "com.google.refine.tests.importers.XmlImporterTests#ignoresDtds"
+        ],
+        "vulnerable_file": "main/src/com/google/refine/importers/XmlImporter.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-64",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": true,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": true,
+            "detail": "baseline_failed=True; pov_passed=True; compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.015625; returns_kept=True; method=ast; stmts patched/original=130/128 ratio=1.016 (min=0.6); returns+throws patched/original=36/36; returns_kept=True"
+          }
+        ],
+        "cleared": true
+      },
+      "tag": "base",
+      "cleared": true
+    },
+    {
+      "bug": {
+        "id": "VUL4J-65",
+        "project": "OpenRefine/OpenRefine",
+        "cwe": "CWE-22",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-65",
+        "pov_tests": [
+          "com.google.refine.tests.importing.ImportingUtilitiesTests#testZipSlip"
+        ],
+        "vulnerable_file": "main/src/com/google/refine/importing/ImportingUtilities.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-65",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; patched tree FAILED to compile. Last log:\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 06:29:59\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 06:30:05\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "retained_ratio=0.0; returns_kept=False; patched code failed to parse (javalang) -> rejected"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-41",
+        "project": "codehaus-plexus/plexus-archiver",
+        "cwe": "CWE-22",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-41",
+        "pov_tests": [
+          "org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException"
+        ],
+        "vulnerable_file": "src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-41",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=144 failing=1 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=144 failing=1 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; compiled=True; pov_passed=False (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=144 failing=1 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=74/74 ratio=1.000 (min=0.6); returns+throws patched/original=16/16; returns_kept=True"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base",
+      "cleared": false
+    }
+  ]
+}
