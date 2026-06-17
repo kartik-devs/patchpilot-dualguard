@@ -1,0 +1,764 @@
+{
+  "model_tag": "base_retry",
+  "manifest": "data/eval/manifest.jsonl",
+  "n": 13,
+  "errors": [],
+  "overall": {
+    "n": 13,
+    "cleared": 4,
+    "rate": 0.3076923076923077,
+    "ci_low": 0.12680497161618087,
+    "ci_high": 0.5763111218666236
+  },
+  "strata": {
+    "overall": {
+      "n": 13,
+      "cleared": 4,
+      "rate": 0.3076923076923077,
+      "ci_low": 0.12680497161618087,
+      "ci_high": 0.5763111218666236
+    },
+    "semgrep-covered": {
+      "n": 11,
+      "cleared": 4,
+      "rate": 0.36363636363636365,
+      "ci_low": 0.15166223614131383,
+      "ci_high": 0.6462032231083628
+    },
+    "semgrep-uncovered": {
+      "n": 2,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.6576280471103807
+    },
+    "vul4j": {
+      "n": 13,
+      "cleared": 4,
+      "rate": 0.3076923076923077,
+      "ci_low": 0.12680497161618087,
+      "ci_high": 0.5763111218666236
+    },
+    "vjbench": {
+      "n": 0,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    },
+    "vjbench-trans": {
+      "n": 0,
+      "cleared": 0,
+      "rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0
+    }
+  },
+  "compare": {
+    "per_tag": {
+      "base_retry": {
+        "n": 13,
+        "cleared": 4,
+        "rate": 0.3076923076923077,
+        "ci_low": 0.12680497161618087,
+        "ci_high": 0.5763111218666236
+      }
+    },
+    "baseline_tag": "baseline",
+    "delta_vs_baseline": {}
+  },
+  "rows": [
+    {
+      "bug": {
+        "id": "VUL4J-50",
+        "project": "javamelody/javamelody",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-50",
+        "pov_tests": [
+          "net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378"
+        ],
+        "vulnerable_file": "javamelody-core/src/main/java/net/bull/javamelody/HtmlSessionInformationsReport.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-50",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": true,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=270 failing=0 error=7"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=270 failing=0 error=7"
+          },
+          {
+            "name": "pov_flip",
+            "passed": true,
+            "detail": "baseline_failed=True; pov_passed=True; compiled=True; pov_passed=True (pov_tests=['net.bull.javamelody.TestHtmlSessionInformationsReport#testCVE_2013_4378']); regression_passed=True (non-PoV failures=[]); totals running=277 passing=270 failing=0 error=7"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=144/144 ratio=1.000 (min=0.6); returns+throws patched/original=2/2; returns_kept=True"
+          }
+        ],
+        "cleared": true
+      },
+      "tag": "base_retry",
+      "cleared": true
+    },
+    {
+      "bug": {
+        "id": "VUL4J-59",
+        "project": "jhy/jsoup",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-59",
+        "pov_tests": [
+          "org.jsoup.parser.XmlTreeBuilderTest#testDoesHandleEOFInTag"
+        ],
+        "vulnerable_file": "src/main/java/org/jsoup/parser/TokeniserState.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-59",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:44:39\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:44:40\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-47",
+        "project": "FasterXML/jackson-dataformat-xml",
+        "cwe": "CWE-611",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-47",
+        "pov_tests": [
+          "com.fasterxml.jackson.dataformat.xml.SupportDTDDefaultsTest#testDTDAttempt"
+        ],
+        "vulnerable_file": "src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-47",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:49:19\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:49:22\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-64",
+        "project": "OpenRefine/OpenRefine",
+        "cwe": "CWE-611",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-64",
+        "pov_tests": [
+          "com.google.refine.tests.importers.XmlImporterTests#ignoresDtds"
+        ],
+        "vulnerable_file": "main/src/com/google/refine/importers/XmlImporter.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-64",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": true,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": true,
+            "detail": "baseline_failed=True; pov_passed=True; compiled=True; pov_passed=True (pov_tests=['com.google.refine.tests.importers.XmlImporterTests#ignoresDtds']); regression_passed=True (non-PoV failures=[]); totals running=1110 passing=1110 failing=0 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.015625; returns_kept=True; method=ast; stmts patched/original=130/128 ratio=1.016 (min=0.6); returns+throws patched/original=36/36; returns_kept=True"
+          }
+        ],
+        "cleared": true
+      },
+      "tag": "base_retry",
+      "cleared": true
+    },
+    {
+      "bug": {
+        "id": "VUL4J-65",
+        "project": "OpenRefine/OpenRefine",
+        "cwe": "CWE-22",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-65",
+        "pov_tests": [
+          "com.google.refine.tests.importing.ImportingUtilitiesTests#testZipSlip"
+        ],
+        "vulnerable_file": "main/src/com/google/refine/importing/ImportingUtilities.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-65",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 13:56:20\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 13:56:26\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-41",
+        "project": "codehaus-plexus/plexus-archiver",
+        "cwe": "CWE-22",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-41",
+        "pov_tests": [
+          "org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException"
+        ],
+        "vulnerable_file": "src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-41",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": true,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=145 failing=0 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=145 failing=0 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": true,
+            "detail": "baseline_failed=True; pov_passed=True; compiled=True; pov_passed=True (pov_tests=['org.codehaus.plexus.archiver.zip.ZipUnArchiverTest#testExtractingZipWithEntryOutsideDestDirThrowsException']); regression_passed=True (non-PoV failures=[]); totals running=145 passing=145 failing=0 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.027027027027027; returns_kept=True; method=ast; stmts patched/original=76/74 ratio=1.027 (min=0.6); returns+throws patched/original=17/16; returns_kept=True"
+          }
+        ],
+        "cleared": true
+      },
+      "tag": "base_retry",
+      "cleared": true
+    },
+    {
+      "bug": {
+        "id": "VUL4J-25",
+        "project": "apache/sling-org-apache-sling-xss",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-25",
+        "pov_tests": [
+          "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHref",
+          "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHrefWithoutHrefConfig"
+        ],
+        "vulnerable_file": "src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-25",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHref', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHrefWithoutHrefConfig']); regression_passed=True (non-PoV failures=[]); totals running=26 passing=24 failing=0 error=2"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHref', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHrefWithoutHrefConfig']); regression_passed=True (non-PoV failures=[]); totals running=26 passing=24 failing=0 error=2"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHref', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidHrefWithoutHrefConfig']); regression_passed=True (non-PoV failures=[]); totals running=26 passing=24 failing=0 error=2"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=128/128 ratio=1.000 (min=0.6); returns+throws patched/original=38/38; returns_kept=True"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-43",
+        "project": "eclipse/rdf4j",
+        "cwe": "CWE-22",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-43",
+        "pov_tests": [
+          "org.eclipse.rdf4j.common.io.ZipUtilTest#testWriteEntryPathTraversing"
+        ],
+        "vulnerable_file": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-43",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.eclipse.rdf4j.common.io.ZipUtilTest#testWriteEntryPathTraversing']); regression_passed=True (non-PoV failures=[]); totals running=110 passing=109 failing=1 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.eclipse.rdf4j.common.io.ZipUtilTest#testWriteEntryPathTraversing']); regression_passed=True (non-PoV failures=[]); totals running=110 passing=109 failing=1 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; compiled=True; pov_passed=False (pov_tests=['org.eclipse.rdf4j.common.io.ZipUtilTest#testWriteEntryPathTraversing']); regression_passed=True (non-PoV failures=[]); totals running=110 passing=109 failing=1 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.105263157894737; returns_kept=True; method=ast; stmts patched/original=21/19 ratio=1.105 (min=0.6); returns+throws patched/original=2/2; returns_kept=True"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-78",
+        "project": "x-stream/xstream",
+        "cwe": "CWE-502",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-78",
+        "pov_tests": [
+          "com.thoughtworks.acceptance.SecurityVulnerabilityTest#testCannotInjectEventHandlerWithUnconfiguredSecurityFramework"
+        ],
+        "vulnerable_file": "xstream/src/java/com/thoughtworks/xstream/XStream.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-78",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:14:46\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:14:50\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-44",
+        "project": "ESAPI/esapi-java-legacy",
+        "cwe": "CWE-310",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-44",
+        "pov_tests": [
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]",
+          "org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]"
+        ],
+        "vulnerable_file": "src/main/java/org/owasp/esapi/codecs/PercentCodec.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-44",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline PoV did NOT fail as expected; missing from failures: ['org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]']. Bug may not be reproducible. failing=15 error=0)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline PoV did NOT fail as expected; missing from failures: ['org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]']. Bug may not be reproducible. failing=15 error=0)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline PoV did NOT fail as expected; missing from failures: ['org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]']. Bug may not be reproducible. failing=15 error=0)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline PoV did NOT fail as expected; missing from failures: ['org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]']. Bug may not be reproducible. failing=15 error=0)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline PoV did NOT fail as expected; missing from failures: ['org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec %De]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec IMMUNE_PERCENT (%)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (!)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS ($)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (*)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (+)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (-)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (.)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (=)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (?)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (@)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (^)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (_)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (|)]', 'org.OWASP.esapi.codecs.CodecImmunityTest#testImmuneEncode[PercentCodec Full_ALPHA_AND_SPECIALS (~)]']. Bug may not be reproducible. failing=15 error=0)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-77",
+        "project": "swagger-api/swagger-parser",
+        "cwe": "CWE-502",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-77",
+        "pov_tests": [
+          "io.swagger.parser.util.SwaggerDeserializerTest#testCVE_2017_1000207"
+        ],
+        "vulnerable_file": "modules/swagger-parser/src/main/java/io/swagger/parser/util/DeserializationUtils.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-77",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": true,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['io.swagger.parser.util.SwaggerDeserializerTest#testCVE_2017_1000207']); regression_passed=True (non-PoV failures=[]); totals running=294 passing=294 failing=0 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=True (pov_tests=['io.swagger.parser.util.SwaggerDeserializerTest#testCVE_2017_1000207']); regression_passed=True (non-PoV failures=[]); totals running=294 passing=294 failing=0 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": true,
+            "detail": "baseline_failed=True; pov_passed=True; compiled=True; pov_passed=True (pov_tests=['io.swagger.parser.util.SwaggerDeserializerTest#testCVE_2017_1000207']); regression_passed=True (non-PoV failures=[]); totals running=294 passing=294 failing=0 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=24/24 ratio=1.000 (min=0.6); returns+throws patched/original=7/7; returns_kept=True"
+          }
+        ],
+        "cleared": true
+      },
+      "tag": "base_retry",
+      "cleared": true
+    },
+    {
+      "bug": {
+        "id": "VUL4J-23",
+        "project": "apache/sling",
+        "cwe": "CWE-79",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-23",
+        "pov_tests": [
+          "org.apache.sling.xss.impl.XSSAPIImplTest#testEncodeForJSString",
+          "org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidJSToken"
+        ],
+        "vulnerable_file": "bundles/extensions/xss/src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-23",
+        "compiles": true,
+        "regression_pass": true,
+        "pov_flipped": false,
+        "semgrep_clean": true,
+        "codeql_clean": true,
+        "not_deleted": true,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testEncodeForJSString', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidJSToken']); regression_passed=True (non-PoV failures=[]); totals running=25 passing=23 failing=2 error=0"
+          },
+          {
+            "name": "regression",
+            "passed": true,
+            "detail": "compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testEncodeForJSString', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidJSToken']); regression_passed=True (non-PoV failures=[]); totals running=25 passing=23 failing=2 error=0"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline_failed=True; pov_passed=False; compiled=True; pov_passed=False (pov_tests=['org.apache.sling.xss.impl.XSSAPIImplTest#testEncodeForJSString', 'org.apache.sling.xss.impl.XSSAPIImplTest#testGetValidJSToken']); regression_passed=True (non-PoV failures=[]); totals running=25 passing=23 failing=2 error=0"
+          },
+          {
+            "name": "sast",
+            "passed": true,
+            "detail": "semgrep_clean=True; codeql_clean=True; semgrep: 0 scoped finding(s) on patched file (clean=True); codeql SKIPPED (not installed; corroboration-only this run). Semgrep + executable PoV/regression remain the binding gates."
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": true,
+            "detail": "retained_ratio=1.0; returns_kept=True; method=ast; stmts patched/original=115/115 ratio=1.000 (min=0.6); returns+throws patched/original=40/40; returns_kept=True"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    },
+    {
+      "bug": {
+        "id": "VUL4J-6",
+        "project": "apache/commons-compress",
+        "cwe": "CWE-835",
+        "source": "vul4j",
+        "checkout_dir": "data/checkouts/VUL4J-6",
+        "pov_tests": [
+          "org.apache.commons.compress.Test_CVE_2018_1324#testCVE_2018_1324"
+        ],
+        "vulnerable_file": "src/main/java/org/apache/commons/compress/archivers/zip/X0017_StrongEncryptionHeader.java"
+      },
+      "verdict": {
+        "bug_id": "VUL4J-6",
+        "compiles": false,
+        "regression_pass": false,
+        "pov_flipped": false,
+        "semgrep_clean": false,
+        "codeql_clean": false,
+        "not_deleted": false,
+        "layers": [
+          {
+            "name": "compile",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "regression",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "pov_flip",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "sast",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          },
+          {
+            "name": "ast_non_deletion",
+            "passed": false,
+            "detail": "baseline PoV did not fail; bug not reproducible (baseline compile FAILED on the vulnerable revision; cannot establish PoV. Last log:\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1m====================== START COMPILE =======================\u001b[0m\n\u001b[36m2026-06-17 14:29:47\u001b[0m | \u001b[1mCompiling...\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[31m\u001b[1mRuntimeError: Compile failed!\u001b[0m\n\u001b[36m2026-06-17 14:29:51\u001b[0m | \u001b[1m======================= END COMPILE ========================\u001b[0m)"
+          }
+        ],
+        "cleared": false
+      },
+      "tag": "base_retry",
+      "cleared": false
+    }
+  ]
+}
